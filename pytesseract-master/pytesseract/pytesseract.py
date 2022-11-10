@@ -26,6 +26,10 @@ from packaging.version import parse
 from packaging.version import Version
 from PIL import Image
 
+##
+import argparse
+import pytesseract
+#
 
 tesseract_cmd = 'tesseract'
 
@@ -577,5 +581,11 @@ def main():
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
+    parser.add_argument('--view-img', action='store_true', help='display results')
+    parser.add_argument('--project', default='runs', help='save results to project/name')
+    parser.add_argument('--name', default='exp', help='save results to project/name')
+    #
 
     exit(main())
