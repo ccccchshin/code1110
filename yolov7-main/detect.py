@@ -14,6 +14,10 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
+#
+import pytesseract
+from PIL import Image
+#
 
 def detect(save_img=False):
     source, weights, view_img, save_txt, imgsz, trace = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size, not opt.no_trace
@@ -165,11 +169,20 @@ def detect(save_img=False):
 
     print(f'Done. ({time.time() - t0:.3f}s)')
 
-
+#
+def main():
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    img = Image.open(r"C:\Users\shin\Downloads\pytesseract-master\tests\data\test.jpg")
+    # img.show()
+    print(pytesseract.image_to_string(img, lang="eng"))
+#
 
 if __name__ == '__main__':
+    #
+
+    #
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt', help='model.pt path(s)')
+    parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt', help='model.pt path(s)') # help()函數是查看函數或模組用途的詳細說明
     parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
@@ -188,7 +201,9 @@ if __name__ == '__main__':
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
     opt = parser.parse_args()
+    #print(pytesseract.image_to_string(, lang="eng"))
     print(opt)
+    main()
     # check_requirements(exclude=('pycocotools', 'thop'))
 
     with torch.no_grad():
