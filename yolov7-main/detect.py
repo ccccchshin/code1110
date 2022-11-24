@@ -169,18 +169,17 @@ def detect(save_img=False):
 
     print(f'Done. ({time.time() - t0:.3f}s)')
 
+
 #
 def main():
-    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-    img = Image.open(r"C:\Users\shin\Downloads\pytesseract-master\tests\data\test.jpg")
-    # img.show()
-    print(pytesseract.image_to_string(img, lang="eng"))
+     pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\S__72573127.jpg")
+     # img.show()
+     print(pytesseract.image_to_string(img, lang="eng"))
 #
 
 if __name__ == '__main__':
-    #
 
-    #
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt', help='model.pt path(s)') # help()函數是查看函數或模組用途的詳細說明
     parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
@@ -204,7 +203,7 @@ if __name__ == '__main__':
     #print(pytesseract.image_to_string(, lang="eng"))
     print(opt)
     main()
-    # check_requirements(exclude=('pycocotools', 'thop'))
+    #check_requirements(exclude=('pycocotools', 'thop'))
 
     with torch.no_grad():
         if opt.update:  # update all models (to fix SourceChangeWarning)
