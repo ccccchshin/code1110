@@ -173,9 +173,10 @@ def detect(save_img=False):
 #
 def main():
      pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\S__72573127.jpg")
+     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\88621.jpg")
      # img.show()
-     print(pytesseract.image_to_string(img, lang="eng"))
+     print(pytesseract.image_to_string(img, lang='eng+chi_tra'))
+
 #
 
 if __name__ == '__main__':
