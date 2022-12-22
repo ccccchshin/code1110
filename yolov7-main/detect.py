@@ -173,13 +173,14 @@ def detect(save_img=False):
 #
 def main():
      pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\88621.jpg")
+     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\1222.png")
      # img.show()
      print(pytesseract.image_to_string(img, lang='eng+chi_tra'))
 
 #
 
 if __name__ == '__main__':
+
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt', help='model.pt path(s)') # help()函數是查看函數或模組用途的詳細說明
