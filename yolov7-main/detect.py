@@ -7,6 +7,8 @@ import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
 
+import numpy as np
+
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
@@ -173,13 +175,43 @@ def detect(save_img=False):
 #
 def main():
      pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\dark.jpg")
+     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\fat253.jpg")
      # img.show()
      print(pytesseract.image_to_string(img, lang='eng+chi_tra'))
 
 #
+#
+def sharpen(img, sigma=55):
+    # sigma = 5、15、25
+    blur_img = cv2.GaussianBlur(img, (0, 0), sigma)
+    usm = cv2.addWeighted(img, 1.5, blur_img, -0.5, 0)
+
+    return usm
+#
 
 if __name__ == '__main__':
+
+    # img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/fat.PNG', cv2.IMREAD_GRAYSCALE)
+    # # img = cv2.GaussianBlur(img, (3, 3), 300)
+    # img = sharpen(img)
+    #
+    # # ret, output3 = cv2.threshold(img, 127, 255, cv2.THRESH_TRUNC)
+    #
+    # # contrast = 200
+    # # brightness = 0
+    # # output = img * (contrast / 127 + 1) - contrast + brightness  # 轉換公式
+    # # output = np.clip(output, 0, 255)
+    # # output = np.uint8(output)
+    #
+    # img2_2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 25, 3)
+    # cv2.namedWindow('zxc', cv2.WINDOW_NORMAL)
+    # # cv2.namedWindow('zxc2', cv2.WINDOW_NORMAL)
+    # cv2.imshow('zxc', img2_2)
+    # # cv2.imshow('zxc2', img2_2)
+    #
+    # cv2.imwrite('fat253.jpg', img2_2)
+    # cv2.waitKey(0)  # 按下任意鍵停止
+    # cv2.destroyAllWindows()
 
 
     parser = argparse.ArgumentParser()
@@ -202,7 +234,10 @@ if __name__ == '__main__':
     parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
     parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
     opt = parser.parse_args()
-    #print(pytesseract.image_to_string(, lang="eng"))
+
+
+
+
     print(opt)
     main()
     #check_requirements(exclude=('pycocotools', 'thop'))
