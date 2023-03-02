@@ -1,2 +1,2 @@
-./tests/data/test.jpg
-./tests/data/test-european.jpg
+inference\images\tests\data\test.jpg
+inference\images\tests\data\test-european.jpg
