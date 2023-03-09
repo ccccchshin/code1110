@@ -1,0 +1,9 @@
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\01.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\02.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\03.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\04.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\05.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\06.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\07.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\08.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\val\09.png
