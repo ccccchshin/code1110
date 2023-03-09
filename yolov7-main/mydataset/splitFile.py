@@ -70,7 +70,7 @@ for fname in names:
         shutil.copy(orgPngPath, newPngPath)
 
     else:
-        orgTxtPath = os.path.join('all', f'{fname}.txt')
+        orgTxtPath = os.path.join('all', f'{fname}.txt') # f-string
         newTxtPath = os.path.join(paths[2], f'{fname}.txt')
         shutil.copy(orgTxtPath, newTxtPath)
 
