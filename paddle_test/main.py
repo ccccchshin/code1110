@@ -10,6 +10,11 @@ import cv2
 import os_two
 
 
+# def split_list(l, n):
+#     # 將list分割 (l:list, n:每個matrix裡面有n個元素)
+#     for idx in range(0, len(l), n):
+#         yield l[idx:idx + n]
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     ocr_model = PaddleOCR(lang='ch', use_gpu=False) # chi_tra 在tesseract 是繁體
@@ -23,8 +28,15 @@ if __name__ == '__main__':
     result = ocr_model.ocr(img_path)
     # result = ocr_model.ocr(img_path)
 
+    # result_sp = list(split_list(result, 1))  # 將list分割成每份中有3個元素
 
+    s = " ".join('%s' %id for id in result) # list to string
 
+    x = s.split(")],") # string split to list
 
+    # print(x, end = "\n")
+
+    for i in x:
+        print(i)
 
 # See PyCharm help at https://www.jetbrains.com/help/pycharm/

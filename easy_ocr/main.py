@@ -11,7 +11,7 @@ if __name__ == '__main__':
 
     reader = easyocr.Reader(['ch_tra', 'en'])
 
-    img_path = os.path.join('C:/Users/shin/410828608/yolov7-main/inference/images/S__74694868.jpg')
+    img_path = os.path.join('C:/Users/shin/410828608/yolov7-main/inference/images/ej9ej9.jpg')
 
 
     result = reader.readtext(img_path)
