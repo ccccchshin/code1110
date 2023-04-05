@@ -1,0 +1,15 @@
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\02.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\03.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\05.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\07.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\10.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\11.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\13.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\18.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\20.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\24.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\26.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\27.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\28.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\30.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\nutrition_image\train\31.jpg

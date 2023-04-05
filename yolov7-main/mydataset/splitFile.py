@@ -11,23 +11,34 @@ if len(sys.argv) < 2:
 valNum = int(sys.argv[1])
 # print(sys.argv[0]) 0 --> 檔案名稱 1 --> 參數
 
-lst = os.listdir('all')  # for返回all資料夾，all 也可以以路徑取代
+lst = os.listdir('C:/Users/shin/410828608/yolov7-main/mydataset/all')  # for返回all資料夾，all 也可以以路徑取代
 lst.remove('classes.txt')
 
-lst_jpg, lst_png = []
+lst_jpg = []
+lst_png = []
 
-jpg_format, png_format = ""
+jpg_format = ""
+png_format = ""
 
 for f in lst:
     # f = 01.jpg
     extension = f.split('.')[-1]  # 副檔名
-    match extension:
-        case "png":
-            lst_png.append(f)
-            png_format = 'png'
-        case "jpg":
-            lst_jpg.append(f)
-            jpg_format = 'jpg'
+    if extension == "jpg":
+        lst_jpg.append(f)
+        jpg_format = 'jpg'
+    elif extension == "png":
+        lst_png.append(f)
+        png_format = 'png'
+    # elif len(extension.split()) != 2:
+    #     print(extension)
+
+# match extension:
+#     case "png":
+#         lst_png.append(f)
+#         png_format = 'png'
+#     case "jpg":
+#         lst_jpg.append(f)
+#         jpg_format = 'jpg'
 
 
 lst_jpg = [i.split('.')[0] for i in lst_jpg]
@@ -70,7 +81,7 @@ for fname in names:
         shutil.copy(orgPngPath, newPngPath)
 
     else:
-        orgTxtPath = os.path.join('all', f'{fname}.txt') # f-string
+        orgTxtPath = os.path.join('all', f'{fname}.txt')  # f-string
         newTxtPath = os.path.join(paths[2], f'{fname}.txt')
         shutil.copy(orgTxtPath, newTxtPath)
 

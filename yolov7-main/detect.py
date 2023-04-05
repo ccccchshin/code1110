@@ -7,6 +7,13 @@ import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
 
+#####
+from imageio.plugins import opencv
+from paddleocr import PaddleOCR, draw_ocr
+from matplotlib import pyplot as plt
+import os
+#####
+
 import numpy as np
 
 from models.experimental import attempt_load
@@ -17,8 +24,8 @@ from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
 #
-import pytesseract
-from PIL import Image
+#import pytesseract
+#from PIL import Image
 #
 
 def detect(save_img=False):
@@ -173,52 +180,52 @@ def detect(save_img=False):
 
 
 #
-def main():
-     pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-     img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\clear_2.jpg")
-     # img.show()
-     print(pytesseract.image_to_string(img, lang='chi_tra'))  # chi_tra_vert
+# def main():
+#      pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+#      img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\clear_2.jpg")
+#      # img.show()
+#      print(pytesseract.image_to_string(img, lang='chi_tra'))  # chi_tra_vert
 
 #
 #
-def sharpen(img, sigma=55):
-    # sigma = 5、15、25
-    blur_img = cv2.GaussianBlur(img, (0, 0), sigma)
-    usm = cv2.addWeighted(img, 1.5, blur_img, -0.5, 0)
-
-    return usm
+# def sharpen(img, sigma=55):
+#     # sigma = 5、15、25
+#     blur_img = cv2.GaussianBlur(img, (0, 0), sigma)
+#     usm = cv2.addWeighted(img, 1.5, blur_img, -0.5, 0)
+#
+#     return usm
 #
 
 if __name__ == '__main__':
 
-    img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/88621.jpg', cv2.IMREAD_GRAYSCALE)
-    # img = cv2.GaussianBlur(img, (3, 3), 300)
-    # img = sharpen(img)
-
-    # ret, output3 = cv2.threshold(img, 127, 255, cv2.THRESH_TRUNC)
-
-    # contrast = 200
-    # brightness = 0
-    # output = img * (contrast / 127 + 1) - contrast + brightness  # 轉換公式
-    # output = np.clip(output, 0, 255)
-    # output = np.uint8(output)
-
-    # img2_2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 128, 3)
-    ret, img2_2 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11,11))
-    img = cv2.dilate(img2_2, kernel)
-
-    img = cv2.resize(img2_2, (1000, 350))
-
-
-    cv2.namedWindow('zxc', cv2.WINDOW_NORMAL)
-    # cv2.namedWindow('zxc2', cv2.WINDOW_NORMAL)
-    cv2.imshow('zxc', img)
-    # cv2.imshow('zxc2', img2_2)
-
-    cv2.imwrite('clear_2.jpg', img)
-    cv2.waitKey(0)  # 按下任意鍵停止
-    cv2.destroyAllWindows()
+    # img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/88621.jpg', cv2.IMREAD_GRAYSCALE)
+    # # img = cv2.GaussianBlur(img, (3, 3), 300)
+    # # img = sharpen(img)
+    #
+    # # ret, output3 = cv2.threshold(img, 127, 255, cv2.THRESH_TRUNC)
+    #
+    # # contrast = 200
+    # # brightness = 0
+    # # output = img * (contrast / 127 + 1) - contrast + brightness  # 轉換公式
+    # # output = np.clip(output, 0, 255)
+    # # output = np.uint8(output)
+    #
+    # # img2_2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 128, 3)
+    # ret, img2_2 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
+    # kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11,11))
+    # img = cv2.dilate(img2_2, kernel)
+    #
+    # img = cv2.resize(img2_2, (1000, 350))
+    #
+    #
+    # cv2.namedWindow('zxc', cv2.WINDOW_NORMAL)
+    # # cv2.namedWindow('zxc2', cv2.WINDOW_NORMAL)
+    # cv2.imshow('zxc', img)
+    # # cv2.imshow('zxc2', img2_2)
+    #
+    # cv2.imwrite('clear_2.jpg', img)
+    # cv2.waitKey(0)  # 按下任意鍵停止
+    # cv2.destroyAllWindows()
 
 
     parser = argparse.ArgumentParser()
@@ -242,11 +249,23 @@ if __name__ == '__main__':
     parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
     opt = parser.parse_args()
 
+    ocr_model = PaddleOCR(lang='ch', use_gpu=False)  # chi_tra 在tesseract 是繁體
 
+    img_path = os.path.join('C:/Users/shin/410828608/yolov7-main/inference/images/S__74694868.jpg')
+    result = ocr_model.ocr(img_path)
 
+    s = " ".join('%s' %id for id in result) # list to string
+
+    x = s.split(")],") # string split to list
+
+    # print(x, end = "\n")
+
+    for i in x:
+        print(i)
 
     print(opt)
-    main()
+
+
     #check_requirements(exclude=('pycocotools', 'thop'))
 
     with torch.no_grad():
