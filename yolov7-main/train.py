@@ -58,8 +58,8 @@ def train(hyp, opt, device, tb_writer=None):
 
     # Configure
     plots = not opt.evolve  # create plots
-    # cuda = device.type != 'cpu'
-    cuda = device.type == 'cpu'
+    cuda = device.type != 'cpu'
+    # cuda = device.type == 'cpu'
     ########
     init_seeds(2 + rank)
     with open(opt.data) as f:

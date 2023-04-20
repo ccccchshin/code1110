@@ -1,6 +1,6 @@
 # train and val data as 1) directory: path/images/, 2) file: path/images.txt, or 3) list: [path1/images/, path2/images/]
-train: ./mydataset/train.txt
-val: ./mydataset/val.txt
+train: C:/Users/shin/410828608/yolov7-main/mydataset/images/train
+val: C:/Users/shin/410828608/yolov7-main/mydataset/images/val
 test:
 
 # number of classes

@@ -56,10 +56,10 @@ names = sorted(list(set(names).difference(set(valNames))))
 # 以上在做隨機分配測試跟訓練的資料
 
 
-paths = [os.path.join('nutrition_image', 'train'),
-         os.path.join('nutrition_image', 'val'),
-         os.path.join('nutrition_labels', 'train'),
-         os.path.join('nutrition_labels', 'val')]
+paths = [os.path.join('images', 'train'),
+         os.path.join('images', 'val'),
+         os.path.join('labels', 'train'),
+         os.path.join('labels', 'val')]
 
 for p in paths:
     os.makedirs(p)  # 創建目錄，如果已有目錄存在會拋出OSError的錯誤
@@ -74,16 +74,24 @@ for fname in names:
         trainPath.append(os.path.abspath(newJpgPath) + '\n')
         shutil.copy(orgJpgPath, newJpgPath)
 
+        orgTxtPath = os.path.join('all', f'{fname}.txt')  # f-string
+        newTxtPath = os.path.join(paths[2], f'{fname}.txt')
+        shutil.copy(orgTxtPath, newTxtPath)
+
     elif fname in lst_png:
         orgPngPath = os.path.join('all', f'{fname}.{png_format}')  # all\檔案名.jpg
         newPngPath = os.path.join(paths[0], f'{fname}.{png_format}')  # train\檔案名
         trainPath.append(os.path.abspath(newPngPath) + '\n')
         shutil.copy(orgPngPath, newPngPath)
 
-    else:
         orgTxtPath = os.path.join('all', f'{fname}.txt')  # f-string
         newTxtPath = os.path.join(paths[2], f'{fname}.txt')
         shutil.copy(orgTxtPath, newTxtPath)
+
+    # else:
+    #     orgTxtPath = os.path.join('all', f'{fname}.txt')  # f-string
+    #     newTxtPath = os.path.join(paths[2], f'{fname}.txt')
+    #     shutil.copy(orgTxtPath, newTxtPath)
 
 valPath = []
 
@@ -95,16 +103,24 @@ for fname in valNames:
         valPath.append(os.path.abspath(newJpgPath) + '\n')
         shutil.copy(orgJpgPath, newJpgPath)
 
+        orgTxtPath = os.path.join('all', f'{fname}.txt')  # f-string
+        newTxtPath = os.path.join(paths[3], f'{fname}.txt')
+        shutil.copy(orgTxtPath, newTxtPath)
+
     elif fname in lst_png:
         orgPngPath = os.path.join('all', f'{fname}.{png_format}')
         newPngPath = os.path.join(paths[1], f'{fname}.{png_format}')
         valPath.append(os.path.abspath(newPngPath) + '\n')
         shutil.copy(orgPngPath, newPngPath)
 
-    else:
-        orgTxtPath = os.path.join('all', f'{fname}.txt')
+        orgTxtPath = os.path.join('all', f'{fname}.txt')  # f-string
         newTxtPath = os.path.join(paths[3], f'{fname}.txt')
         shutil.copy(orgTxtPath, newTxtPath)
+
+    # else:
+    #     orgTxtPath = os.path.join('all', f'{fname}.txt')
+    #     newTxtPath = os.path.join(paths[3], f'{fname}.txt')
+    #     shutil.copy(orgTxtPath, newTxtPath)
 
 with open('train.txt', 'w') as f:
     f.writelines(trainPath)
