@@ -1,15 +1,10 @@
-C:\Users\shin\410828608\yolov7-main\mydataset\images\train\01.jpg
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\03.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\train\07.jpg
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\08.jpg
-C:\Users\shin\410828608\yolov7-main\mydataset\images\train\09.png
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\10.jpg
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\12.jpg
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\13.jpg
-C:\Users\shin\410828608\yolov7-main\mydataset\images\train\14.jpg
-C:\Users\shin\410828608\yolov7-main\mydataset\images\train\16.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\train\15.jpg
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\17.jpg
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\19.jpg
 C:\Users\shin\410828608\yolov7-main\mydataset\images\train\20.jpg
-C:\Users\shin\410828608\yolov7-main\mydataset\images\train\21.jpg
-C:\Users\shin\410828608\yolov7-main\mydataset\images\train\23.jpg
-C:\Users\shin\410828608\yolov7-main\mydataset\images\train\25.jpg

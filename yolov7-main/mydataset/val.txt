@@ -1,0 +1,10 @@
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\01.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\02.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\04.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\05.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\06.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\09.png
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\11.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\14.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\16.jpg
+C:\Users\shin\410828608\yolov7-main\mydataset\images\val\18.jpg
