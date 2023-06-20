@@ -28,6 +28,8 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized,
 #from PIL import Image
 #
 
+# 獲取相對應的參數和測試(判斷測試是本地圖片還是網路圖片)
+
 def detect(save_img=False):
     source, weights, view_img, save_txt, imgsz, trace = opt.source, opt.weights, opt.view_img, opt.save_txt, opt.img_size, not opt.no_trace
     save_img = not opt.nosave and not source.endswith('.txt')  # save inference images
@@ -35,27 +37,33 @@ def detect(save_img=False):
         ('rtsp://', 'rtmp://', 'http://', 'https://'))
 
     # Directories
+    # 建立保存訓練結果的資料夾
     save_dir = Path(increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok))  # increment run
     (save_dir / 'labels' if save_txt else save_dir).mkdir(parents=True, exist_ok=True)  # make dir
 
     # Initialize
+    # 選擇使用 cpu 還是 cuda 進行測試
     set_logging()
     device = select_device(opt.device)
     # half = device.type != 'cpu'  # half precision only supported on CUDA
     half = False
 
     # Load model
+    # 加載權重文件 (if沒上傳自己的權重文件，會自動下載預先訓練好的模型權重文件)
     model = attempt_load(weights, map_location=device)  # load FP32 model
+
+    # 檢測圖片大小, if測試圖片不是 32 的倍數, 那麼會自動調整為 32 的倍數 (調用 make_divisible 方法)
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
 
+    # 判斷是否進行 libtorch 轉換和參數 half 操作
     if trace:
         model = TracedModel(model, device, opt.img_size)
-
     if half:
         model.half()  # to FP16
 
     # Second-stage classifier
+    # 看user是否選擇用一個分類網絡來對定位的內容進行分類
     classify = False
     if classify:
         modelc = load_classifier(name='resnet101', n=2)  # initialize
@@ -67,14 +75,17 @@ def detect(save_img=False):
         view_img = check_imshow()
         cudnn.benchmark = True  # set True to speed up constant image size inference
         dataset = LoadStreams(source, img_size=imgsz, stride=stride)
+        # 待預測圖片路徑, 網絡支持的預測圖片大小, 網絡的最大步長
     else:
         dataset = LoadImages(source, img_size=imgsz, stride=stride)
+
 
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
     colors = [[random.randint(0, 255) for _ in range(3)] for _ in names]
 
     # Run inference
+    # 對圖片進行歸一化操作
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     old_img_w = old_img_h = imgsz
@@ -85,6 +96,9 @@ def detect(save_img=False):
         img = torch.from_numpy(img).to(device)
         img = img.half() if half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
+
+        # img.ndimension() 返回tensor對象的維度
+        # img.unsqueeze(0) 在指定維度上添加一個維度
         if img.ndimension() == 3:
             img = img.unsqueeze(0)
 
@@ -98,11 +112,13 @@ def detect(save_img=False):
                 model(img, augment=opt.augment)[0]
 
         # Inference
+        # 將測試圖片餵入網絡中, 得到預測結果 (有可能會預測出來很多框, 後續會再使用nms的方法去移除多餘的框)
         t1 = time_synchronized()
         pred = model(img, augment=opt.augment)[0]
         t2 = time_synchronized()
 
         # Apply NMS
+        # 對預測結果進行nms的操作 (去除多餘的框)
         pred = non_max_suppression(pred, opt.conf_thres, opt.iou_thres, classes=opt.classes, agnostic=opt.agnostic_nms)
         t3 = time_synchronized()
 
@@ -111,6 +127,9 @@ def detect(save_img=False):
             pred = apply_classifier(pred, modelc, img, im0s)
 
         # Process detections
+        # 針對每一張待預測圖片, 遍歷輸出結果, 創建相對應的保存路徑
+        # gn 表示經過resize之後的長寬 (方便後續xyxy2xywh的操作)
+
         for i, det in enumerate(pred):  # detections per image
             if webcam:  # batch_size >= 1
                 p, s, im0, frame = path[i], '%g: ' % i, im0s[i].copy(), dataset.count
@@ -121,6 +140,9 @@ def detect(save_img=False):
             save_path = str(save_dir / p.name)  # img.jpg
             txt_path = str(save_dir / 'labels' / p.stem) + ('' if dataset.mode == 'image' else f'_{frame}')  # img.txt
             gn = torch.tensor(im0.shape)[[1, 0, 1, 0]]  # normalization gain whwh
+
+            # scale_coords 將預測的結果進行轉換, 因為我們剛剛有使用 gn 進行resize的處理
+            # 因此要依照剛剛調整的比例將預測的框對應到原本圖片的大小
             if len(det):
                 # Rescale boxes from img_size to im0 size
                 det[:, :4] = scale_coords(img.shape[2:], det[:, :4], im0.shape).round()
@@ -144,6 +166,8 @@ def detect(save_img=False):
 
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
+            # 我選取到的範圍都print出來
+            print(scale_coords(img.shape[2:], det[:, :4], im0.shape).round())
 
             # Stream results
             if view_img:
@@ -233,7 +257,7 @@ if __name__ == '__main__':
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt', help='model.pt path(s)') # help()函數是查看函數或模組用途的詳細說明
     parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.25, help='object confidence threshold')
+    parser.add_argument('--conf-thres', type=float, default=0.2, help='object confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
     parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
     parser.add_argument('--view-img', action='store_true', help='display results')
@@ -252,13 +276,36 @@ if __name__ == '__main__':
 
     ocr_model = PaddleOCR(lang='ch', use_gpu=False)  # chi_tra 在tesseract 是繁體
 
-    img_path = os.path.join('C:/Users/shin/410828608/yolov7-main/inference/images/S__74694868.jpg')
-    result = ocr_model.ocr(img_path)
+    # opencv裁減yolo擷取到的範圍
+    # 存到某個變數 + 放在path裡面
+    # assign給img_path後, 再從img_path裡辨識文字
+
+    test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/mydataset/images/train/05.jpg')
+    # test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/image1.jpg')
+    # tensor([  6.,   4., 373., 522.]) y, x, w, h
+    # test_img[y:y+h, x:x+w]
+    # print("左上角：(" + str[c1[0]] + "," + str[c1[1]] + "), 右下角：(" + + str[c2[0]] + "," + str[c2[1]] + ")")
+
+    # 泡麵左上角：(250,606), 右下角：(323,595)
+
+    # crop_img = test_img[458:580, 263:469]
+    crop_img = test_img[595:606, 250:522]
+    # tensor([[294., 525., 507., 642.]])
+    # crop_img = test_img[6:522, 4:373]
+
+    # 左上角：(263, 469), 右下角：(336, 458)
+    # 左上角：(414,13), 右下角：(487,2)
+    cv2.imshow("cropped", crop_img)
+    cv2.waitKey(0)
+
+    img_path = os.path.join('C:/Users/shin/410828608/yolov7-main/inference/images/image1.jpg')
+    # result = ocr_model.ocr(img_path)
+    result = ocr_model.ocr(crop_img)
 
     s = " ".join('%s' %id for id in result) # list to string
 
-    x = s.split(")],") # string split to list
 
+    x = s.split(")],") # string split to list
     # print(x, end = "\n")
 
     for i in x:
@@ -266,8 +313,6 @@ if __name__ == '__main__':
 
     print(opt)
 
-
-    #check_requirements(exclude=('pycocotools', 'thop'))
 
     with torch.no_grad():
         if opt.update:  # update all models (to fix SourceChangeWarning)
