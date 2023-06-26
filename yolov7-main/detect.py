@@ -21,7 +21,7 @@ from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
     scale_coords, xyxy2xywh, strip_optimizer, set_logging, increment_path
-from utils.plots2 import plot_one_box
+from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
 #
@@ -56,6 +56,8 @@ def detect(save_img=False):
     # 檢測圖片大小, if測試圖片不是 32 的倍數, 那麼會自動調整為 32 的倍數 (調用 make_divisible 方法)
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
+
+
 
     # 判斷是否進行 libtorch 轉換和參數 half 操作
     if trace:
@@ -168,6 +170,8 @@ def detect(save_img=False):
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
             # 我選取到的範圍都print出來
+            test_arg = np.array(scale_coords(img.shape[2:], det[:, :4], im0.shape).round())
+            print(test_arg)
             print(scale_coords(img.shape[2:], det[:, :4], im0.shape).round())
 
             # Stream results
@@ -281,8 +285,8 @@ if __name__ == '__main__':
     # 存到某個變數 + 放在path裡面
     # assign給img_path後, 再從img_path裡辨識文字
 
-    test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/mydataset/images/train/05.jpg')
-    # test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/image1.jpg')
+    # test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/mydataset/images/train/05.jpg')
+    test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/image1.jpg')
     # tensor([  6.,   4., 373., 522.]) y, x, w, h
     # test_img[y:y+h, x:x+w]
     # print("左上角：(" + str[c1[0]] + "," + str[c1[1]] + "), 右下角：(" + + str[c2[0]] + "," + str[c2[1]] + ")")
@@ -290,7 +294,9 @@ if __name__ == '__main__':
     # 泡麵左上角：(250,606), 右下角：(323,595)
 
     # crop_img = test_img[458:580, 263:469]
-    crop_img = test_img[595:606, 250:522]
+    crop_img = test_img[249:322, 595:606]
+
+    # 0626 [[        398         970         722        1024]]
     # tensor([[294., 525., 507., 642.]])
     # crop_img = test_img[6:522, 4:373]
 

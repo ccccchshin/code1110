@@ -7,6 +7,9 @@ import random
 from copy import copy
 from pathlib import Path
 
+import tensorflow as tf
+from tensorflow.python.keras import backend
+
 import cv2
 import matplotlib
 import matplotlib.pyplot as plt
@@ -66,6 +69,11 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
         c2 = c1[0] + t_size[0], c1[1] - t_size[1] - 3
         cv2.rectangle(img, c1, c2, color, -1, cv2.LINE_AA)  # filled
         cv2.putText(img, label, (c1[0], c1[1] - 2), 0, tl / 3, [225, 255, 255], thickness=tf, lineType=cv2.LINE_AA)
+    # var = {'a': np.array([1, 2, 2]), 'b': np.array([2, 1, 3]), 'c': np.array([3])}
+    # sess = backend.get_session()
+    # str = sess.run(tf)
+    # 左上角：(249,606), 右下角：(322,595)
+    # np.array(str)
     print("左上角：(" + str(c1[0]) + "," + str(c1[1]) + "), 右下角：(" + str(c2[0]) + "," + str(c2[1]) + ")")
 
 def plot_one_box_PIL(box, img, color=None, label=None, line_thickness=None):
