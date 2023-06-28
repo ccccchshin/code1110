@@ -33,7 +33,14 @@ seaborn>=0.11.0
 # Extras --------------------------------------
 ipython  # interactive notebook
 psutil  # system utilization
-thop  # FLOPs computation
+thop~=0.1.1-2209072238
 # albumentations>=1.0.3
 # pycocotools>=2.0  # COCO mAP
 # roboflow
+
+yaml~=0.2.5
+tensorflow~=2.12.0
+onnx~=1.13.1
+tritonclient~=2.32.0
+imageio~=2.26.0
+paddleocr~=2.6.1.3

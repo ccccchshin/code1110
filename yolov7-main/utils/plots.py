@@ -74,7 +74,7 @@ def plot_one_box(x, img, color=None, label=None, line_thickness=3):
     # str = sess.run(tf)
     # 左上角：(249,606), 右下角：(322,595)
     # np.array(str)
-    print("左上角：(" + str(c1[0]) + "," + str(c1[1]) + "), 右下角：(" + str(c2[0]) + "," + str(c2[1]) + ")")
+    #print("左上角：(" + str(c1[0]) + "," + str(c1[1]) + "), 右下角：(" + str(c2[0]) + "," + str(c2[1]) + ")")
 
 def plot_one_box_PIL(box, img, color=None, label=None, line_thickness=None):
     img = Image.fromarray(img)

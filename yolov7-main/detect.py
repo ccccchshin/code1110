@@ -10,7 +10,7 @@ from numpy import random
 
 #####
 from imageio.plugins import opencv
-from paddleocr import PaddleOCR, draw_ocr
+from paddleocr import PaddleOCR
 from matplotlib import pyplot as plt
 import os
 #####
@@ -156,6 +156,7 @@ def detect(save_img=False):
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
                 # Write results
+                imgNo = 0
                 for *xyxy, conf, cls in reversed(det):
                     if save_txt:  # Write to file
                         xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
@@ -165,14 +166,20 @@ def detect(save_img=False):
 
                     if save_img or view_img:  # Add bbox to image
                         label = f'{names[int(cls)]} {conf:.2f}'
-                        #plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=1)
                         plot_one_box(xyxy, im0, label=label, color=colors[int(cls)], line_thickness=1)
+
+                    if names[int(cls)] == 'nutrition':
+                        f_name = save_path.split(".")[0]
+                        # print(xyxy)
+                        crop_image(xyxy, im0, imgNo, f_name)
+                        imgNo = imgNo + 1
+
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
             # 我選取到的範圍都print出來
-            test_arg = np.array(scale_coords(img.shape[2:], det[:, :4], im0.shape).round())
-            print(test_arg)
-            print(scale_coords(img.shape[2:], det[:, :4], im0.shape).round())
+            # test_arg = np.array(scale_coords(img.shape[2:], det[:, :4], im0.shape).round())
+            # print("一般座標：" + test_arg)
+            # print("tensor：" + scale_coords(img.shape[2:], det[:, :4], im0.shape).round())
 
             # Stream results
             if view_img:
@@ -226,37 +233,34 @@ def detect(save_img=False):
 #     return usm
 #
 
+def crop_image(xy, img, id, path):
+
+    x1 = int(xy[0])
+    y1 = int(xy[1])
+    x2 = int(xy[2])
+    y2 = int(xy[3])
+    print(x1, y1, x2, y2)
+
+    cropped_image = img[y1:y2, x1:x2]
+    cv2.imshow("cropped", cropped_image)
+
+    cimg_name = path + "_" + str(id) + ".jpg"
+    cv2.imwrite(cimg_name, cropped_image)
+
+    ocr_model = PaddleOCR(lang='ch', use_gpu=False)  # chi_tra 在tesseract 是繁體
+    img_path = os.path.join(cimg_name)
+    # result = ocr_model.ocr(img_path, det=False)
+    result = ocr_model.ocr(img_path)
+    s = " ".join('%s' % id for id in result)  # list to string
+
+    x = s.split(")],")  # string split to list
+    print(x, end="\n")
+
+    for i in x:
+        print(i)
+
+
 if __name__ == '__main__':
-
-    # img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/88621.jpg', cv2.IMREAD_GRAYSCALE)
-    # # img = cv2.GaussianBlur(img, (3, 3), 300)
-    # # img = sharpen(img)
-    #
-    # # ret, output3 = cv2.threshold(img, 127, 255, cv2.THRESH_TRUNC)
-    #
-    # # contrast = 200
-    # # brightness = 0
-    # # output = img * (contrast / 127 + 1) - contrast + brightness  # 轉換公式
-    # # output = np.clip(output, 0, 255)
-    # # output = np.uint8(output)
-    #
-    # # img2_2 = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 128, 3)
-    # ret, img2_2 = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY)
-    # kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (11,11))
-    # img = cv2.dilate(img2_2, kernel)
-    #
-    # img = cv2.resize(img2_2, (1000, 350))
-    #
-    #
-    # cv2.namedWindow('zxc', cv2.WINDOW_NORMAL)
-    # # cv2.namedWindow('zxc2', cv2.WINDOW_NORMAL)
-    # cv2.imshow('zxc', img)
-    # # cv2.imshow('zxc2', img2_2)
-    #
-    # cv2.imwrite('clear_2.jpg', img)
-    # cv2.waitKey(0)  # 按下任意鍵停止
-    # cv2.destroyAllWindows()
-
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt', help='model.pt path(s)') # help()函數是查看函數或模組用途的詳細說明
@@ -279,51 +283,15 @@ if __name__ == '__main__':
     parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
     opt = parser.parse_args()
 
-    ocr_model = PaddleOCR(lang='ch', use_gpu=False)  # chi_tra 在tesseract 是繁體
-
-    # opencv裁減yolo擷取到的範圍
+    # opencv裁剪yolo擷取到的範圍
     # 存到某個變數 + 放在path裡面
     # assign給img_path後, 再從img_path裡辨識文字
 
-    # test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/mydataset/images/train/05.jpg')
-    test_img = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/image1.jpg')
-    # tensor([  6.,   4., 373., 522.]) y, x, w, h
-    # test_img[y:y+h, x:x+w]
-    # print("左上角：(" + str[c1[0]] + "," + str[c1[1]] + "), 右下角：(" + + str[c2[0]] + "," + str[c2[1]] + ")")
-
-    # 泡麵左上角：(250,606), 右下角：(323,595)
-
-    # crop_img = test_img[458:580, 263:469]
-    crop_img = test_img[249:322, 595:606]
-
-    # 0626 [[        398         970         722        1024]]
-    # tensor([[294., 525., 507., 642.]])
-    # crop_img = test_img[6:522, 4:373]
-
-    # 左上角：(263, 469), 右下角：(336, 458)
-    # 左上角：(414,13), 右下角：(487,2)
-    cv2.imshow("cropped", crop_img)
-    cv2.waitKey(0)
-
-    img_path = os.path.join('C:/Users/shin/410828608/yolov7-main/inference/images/image1.jpg')
-    # result = ocr_model.ocr(img_path)
-    result = ocr_model.ocr(crop_img)
-
-    s = " ".join('%s' %id for id in result) # list to string
-
-
-    x = s.split(")],") # string split to list
-    # print(x, end = "\n")
-
-    for i in x:
-        print(i)
-
     print(opt)
-
 
     with torch.no_grad():
         if opt.update:  # update all models (to fix SourceChangeWarning)
-            for opt.weights in ['yolov7.pt']:
+            for opt.weights in ['C:/Users/shin/runs/train/exp14/weights/best.pt']:
                 detect()
                 strip_optimizer(opt.weights)
         else:
