@@ -1,5 +1,5 @@
-# -*-coding:utf-8-*-
 import argparse
+import operator
 import time
 from pathlib import Path
 
@@ -24,9 +24,10 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
+
 #
-#import pytesseract
-#from PIL import Image
+# import pytesseract
+# from PIL import Image
 #
 
 # 獲取相對應的參數和測試(判斷測試是本地圖片還是網路圖片)
@@ -57,8 +58,6 @@ def detect(save_img=False):
     stride = int(model.stride.max())  # model stride
     imgsz = check_img_size(imgsz, s=stride)  # check img_size
 
-
-
     # 判斷是否進行 libtorch 轉換和參數 half 操作
     if trace:
         model = TracedModel(model, device, opt.img_size)
@@ -81,7 +80,6 @@ def detect(save_img=False):
         # 待預測圖片路徑, 網絡支持的預測圖片大小, 網絡的最大步長
     else:
         dataset = LoadImages(source, img_size=imgsz, stride=stride)
-
 
     # Get names and colors
     names = model.module.names if hasattr(model, 'module') else model.names
@@ -188,7 +186,6 @@ def detect(save_img=False):
                 ###
                 cap = cv2.VideoCapture(0)
 
-
             # Save results (image with detections)
             if save_img:
                 if dataset.mode == 'image':
@@ -234,7 +231,6 @@ def detect(save_img=False):
 #
 
 def crop_image(xy, img, id, path):
-
     x1 = int(xy[0])
     y1 = int(xy[1])
     x2 = int(xy[2])
@@ -253,17 +249,46 @@ def crop_image(xy, img, id, path):
     result = ocr_model.ocr(img_path)
     s = " ".join('%s' % id for id in result)  # list to string
 
+    # output字
+
     x = s.split(")],")  # string split to list
+    # 接到圖、字
+    # 下方main function跑圖 這邊存圖裡的字 + socket會有一個字串
+    # socket解析 get裡面內容
+    # 用迴圈跑 跑到了把index存下來（預想是array[index++]）
+    # 最後再跑迴圈然後對影像作處理
+    # 去get y座標 高取兩個y座標的中間值 長度對應圖片長度就行 去做標示
+    # 最後用socket回傳
+
+    keyword = ""  # get socket keyword
+    search_keyword(x, keyword)
+
     print(x, end="\n")
 
     for i in x:
         print(i)
 
 
+def search_keyword(all_words, keyword):
+    arr = []
+    store_keyword = []
+
+    for i in all_words:
+        if operator.contains(all_words, keyword):
+            arr[i] = arr[i] + 1
+    for i in arr:
+        if arr[i] != 0:
+            store_keyword = all_words(i)
+
+    print(store_keyword)
+    # 要回傳socket包回去
+
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt', help='model.pt path(s)') # help()函數是查看函數或模組用途的詳細說明
+    parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt',
+                        help='model.pt path(s)')  # help()函數是查看函數或模組用途的詳細說明
     parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
     parser.add_argument('--conf-thres', type=float, default=0.2, help='object confidence threshold')
