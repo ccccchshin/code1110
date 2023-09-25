@@ -278,7 +278,7 @@ def search_keyword(all_words, keyword):
             arr[i] = arr[i] + 1
     for i in arr:
         if arr[i] != 0:
-            store_keyword = all_words(i)
+            store_keyword[i] = all_words(i)
 
     print(store_keyword)
     # 要回傳socket包回去

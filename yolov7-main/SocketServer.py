@@ -1,6 +1,6 @@
 import socket
 import threading
-
+import sys
 import os
 
 def main():
@@ -16,28 +16,44 @@ def handle_client(conn, addr):
         if not data:
             # if data is not received break 檢查封包是否為空
             break
-        os.system('detect.py')
-
+        # os.system('detect.py')
         print("from connected user: " + str(data))
-        data = input(' -> ')
+        data = input('Hello, I am server!')
+        # conn.send("Hello, I am server!")
         conn.send(data.encode())  # send data to the client
 
     conn.close()  # close the connection
 
 def server_program():
     # get the hostname
-    host = socket.gethostname()
-    port = 5000  # initiate port no above 1024
+    host = "120.110.113.213"
+    port = 12345  # initiate port no above 1024
 
-    server_socket = socket.socket()  # get instance
-    # look closely. The bind() function takes tuple as argument
-    server_socket.bind((host, port))  # bind host address and port together
+    # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個）
+    # socket.AF_UNIX => 在本機端進行串接
+    # socket.SOCK_STREAM => TCP宣告
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        # bind用於server端要監聽的IP address跟Port
+        server_socket.bind((host, port))  # bind host address and port together
+    except socket.error as err:
+        print("Bind failed")
+        sys.exit()
+    print("Socket bind success")
 
-    # configure how many client the server can listen simultaneously
-    server_socket.listen(2) # 看server一次可以監聽有多少個client
-    conn, address = server_socket.accept()  # accept new connection
-    t3 = threading.Thread(target=handle_client(conn, address)) # 建立新的執行緒
-    print("Connection from: " + str(address))
+    server_socket.listen(2)  # 用於server端一次可接受多少socket串接
+    print("Socket is now listening")
+
+    while 1:
+        conn, address = server_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
+        print('Connect with ' + address[0] + ':' + str(address[1]))
+
+        buf = conn.recv(64)
+        print(buf)
+        # conn.send("Hello, I am server!")
+        t2 = threading.Thread(target=handle_client(conn, address))  # 建立新的執行緒
+        t2.start()
+
 
 if __name__ == '__main__':
     main()
