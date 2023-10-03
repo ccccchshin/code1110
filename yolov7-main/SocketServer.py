@@ -1,5 +1,9 @@
 import socket
-from io import BytesIO
+import socketserver
+import datetime
+import numpy as np
+import cv2
+import base64
 
 import jpysocket
 import threading
@@ -11,30 +15,84 @@ from PIL import Image
 
 # 接收資料
 def handle_client(conn):
+
+    print("hello I am handle_client")
+
     while 1:
+        # 字串處理
+        print("hello")
         data = conn.recv(1024)  # String
-        image = conn.recv(1024)
-        # image 處理格式
-        # handleImage = Image.open(BytesIO(image))
-        # if not handleImage:
-        #     print("Hello")
         msgrecv = jpysocket.jpydecode(data)
-        if not msgrecv:
-            # if data is not received break 檢查封包是否為空
-            break
+        # if not msgrecv:
+        #     # if data is not received break 檢查封包是否為空
+        #     break
         print("keyword: " + msgrecv)
 
-        os.system('detect.py')
+        # image 處理格式
+        image = conn.recv(1024)  # image
+        image_arr = []
+
+        # if len(image_arr) == 0:
+        #     print("null or not?")
+        #     break
+        image_arr.extend(image)
+        print("get over")
+        result_image = np.asarray(bytearray(image_arr), dtype="uint8")
+        result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
+
+        cv2.namedWindow("Image")
+        cv2.imshow("Image", result_image)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+        print("get owari")
+        conn.sendall("get ur connect!".encode("utf-8"))
+        # conn.close()
+
+        # os.system('detect.py')
         # detect.py have to catch 2 args image & keyword
         # os.popen() 把detect執行完的成果拿過來
 
-        send_keyword(conn, msgrecv)
+        # send_keyword(conn, msgrecv) yy
         # send image(conn, image)
 
         # print("from connected user: " + str(data))
         # get detect.py 執行過後的結果
         # return(detect.py傳過來的圖片)
 
+
+# class MyTCPHandler(socketserver.BaseRequestHandler):
+#     def handle(self):
+#         print("get.....")
+#         image1 = []
+#         try:
+#             while True:
+#                 data = self.request.recv(1024)
+#                 print('data, ', data)
+#                 if not data or len(data) == 0:
+#                     break
+#                 image1.extend(data)
+#             print("get over")
+#             image = np.asarray(bytearray(image1), dtype="uint8")
+#             image = cv2.imdecord(image, cv2.IMREAD_COLOR)
+#             cv2.namedWindow("Image")
+#             cv2.imshow("Image", image)
+#             cv2.waitKey(0)
+#             cv2.destroyAllWindows()
+#             print("get owari")
+#             self.request.sendall("get ur connect!".encode("utf-8"))
+#         except Exception:
+#             print(self.client_address, "connect bye")
+#         finally:
+#             self.request.close()
+#
+#     def setup(self):
+#         now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#         print(now_time)
+#         print("connect build: ", self.client_address)
+#
+#     def finish(self):
+#         print("connect free")
 
 # 送圖片
 def send_image(conn, image):
