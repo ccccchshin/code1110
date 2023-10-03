@@ -249,6 +249,7 @@ def crop_image(xy, img, id, path):
     result = ocr_model.ocr(img_path)
     s = " ".join('%s' % id for id in result)  # list to string
 
+
     # output字
 
     x = s.split(")],")  # string split to list
@@ -273,8 +274,20 @@ def search_keyword(all_words, keyword):
     arr = []
     store_keyword = []
 
+# 成分  100克 list(0)
+# 脂肪   50克 list(1)
+#
+# for(int i=0;i<=arr.length;i++){
+#     test[]
+#     arr[] = {0,1,2,3,4,5}
+#     arr2[] = {3,0,3,3,3,3}
+#     if(arr[i] == arr2[i]){
+#         test[i]++
+#     }
+# }
+
     for i in all_words:
-        if operator.contains(all_words, keyword):
+        if operator.contains(all_words(i), keyword):
             arr[i] = arr[i] + 1
     for i in arr:
         if arr[i] != 0:

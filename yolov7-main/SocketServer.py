@@ -32,12 +32,13 @@ def handle_client(conn):
         image = conn.recv(1024)  # image
         image_arr = []
 
-        # if len(image_arr) == 0:
-        #     print("null or not?")
+        if len(image_arr) == 0:
+            print("null or not?")
         #     break
         image_arr.extend(image)
         print("get over")
-        result_image = np.asarray(bytearray(image_arr), dtype="uint8")
+        result_image = np.ascontiguousarray(bytearray(image_arr), dtype="uint8")
+
         result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
 
         cv2.namedWindow("Image")
@@ -46,7 +47,8 @@ def handle_client(conn):
         cv2.destroyAllWindows()
 
         print("get owari")
-        conn.sendall("get ur connect!".encode("utf-8"))
+        # conn.sendall("get ur connect!".encode("utf-8"))
+
         # conn.close()
 
         # os.system('detect.py')
