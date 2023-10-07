@@ -12,21 +12,26 @@ import json
 import os
 from PIL import Image
 
-
+# global msgrecv
+msgrecv = " "
 # 接收字串
 def handle_client(conn):
     print("hello I am handle_client")
+    global msgrecv
+    # msgrecv = ""
     while True:
         # 字串處理
         data = conn.recv(1024)  # String
         msgrecv = jpysocket.jpydecode(data)
-        if not msgrecv:
-            # if data is not received break 檢查封包是否為空
-            print("no get string data")
-            # time.sleep(0.5)
-            break
+        # if not msgrecv:
+        #     # if data is not received break 檢查封包是否為空
+        #     print("no get string data")
+        #     # time.sleep(0.5)
+        #     break
         print("keyword: " + msgrecv)
-        conn.sendall("OK".encode("utf-8"))
+        conn.send(data)
+        # conn.sendall(msgrecv.encode("utf-8"))
+        # conn.sendall("OK".encode("utf-8"))
         print("get ok")
 
     print("conn 8181")
@@ -76,10 +81,10 @@ def send_image(conn, image):
 
 
 # 送文字
-def send_keyword(conn, keyword):
+def send_keyword(conn, store_keyword):
     # data = data
-    print("send_data", keyword)
-    msgsend = jpysocket.jpyencode(keyword)  # Encript The Msg
+    print("send_data", store_keyword)
+    msgsend = jpysocket.jpyencode(store_keyword)  # Encript The Msg
     conn.send(msgsend)
 
 
@@ -88,24 +93,44 @@ def file_receive(conn):
     try:
         while 1:
         # image 處理格式
-                image = conn.recv(1024)  # image
-                image_arr = []
-                image_arr.extend(image)
+            image = conn.recv(1024)  # image
+            image_arr = bytearray()
 
-                if len(image_arr) == 0:
-                    print("null or not?")
-                #     break
+            image_arr.extend(image)
 
-                print("get over")
-                result_image = np.ascontiguousarray(bytearray(image_arr), dtype="uint8")
+            # if len(image_arr) == 0:
+            #     print("img null or not?")
+            # #    break
+            if result_image is not None:
+                    cv2.imshow('app_image.JPG', result_image)
 
-                result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
+                    print("img get failed3")
+                    cv2.waitKey(0)
+                    cv2.destroyAllWindows()
+                    print("get owari")
+            else:
+                print("失敗")
 
-                cv2.namedWindow("Image")
-                cv2.imshow("Image", result_image)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-                print("get owari")
+            print("img get over")
+            # result_image = np.ascontiguousarray(bytearray(image_arr), dtype="uint8")
+
+            # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
+            result_image = cv2.imdecode(np.ascontiguousarray(bytearray(image_arr), dtype="uint8"), cv2.IMREAD_COLOR)
+
+            print("img get failed0")
+
+                # result_image = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/app_image.JPG',0)
+                # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
+                # print("img get failed1")
+                # count = 0
+                #寫入並儲存圖片
+                # cv2.imwrite('C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG', result_image)
+                # tempPath = 'C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG'
+                # count = count + 1
+                # print("img get failed2")
+
+                # result_image = cv2.imread(tempPath, 0)
+
         # while True:
         #     data = conn.recv(1024)
         #     # print('data, ', data)
@@ -233,6 +258,4 @@ if __name__ == '__main__':
     print("check0")
     str_thread.start()
     img_thread.start()
-
-
 

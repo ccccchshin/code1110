@@ -1,6 +1,7 @@
 import argparse
 import operator
-import socketserver
+import socket
+import SocketServer
 import time
 from pathlib import Path
 
@@ -263,7 +264,10 @@ def crop_image(xy, img, id, path):
     # 去get y座標 高取兩個y座標的中間值 長度對應圖片長度就行 去做標示
     # 最後用socket回傳
 
-    keyword = ""  # get socket keyword
+    # SocketServer.handle_client(SocketServer.conn)
+    # print("msgrecv:",SocketServer.msgrecv)
+
+    keyword = SocketServer.msgrecv  # get socket keyword 接socket的字串
     search_keyword(x, keyword)
 
     print(x, end="\n")
@@ -296,10 +300,12 @@ def search_keyword(all_words, keyword):
             store_keyword[i] = all_words(i)
 
     print(store_keyword)
+    # SocketServer.send_String(store_keyword)
     # 要回傳socket包回去
 
 
 if __name__ == '__main__':
+
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt',
@@ -337,5 +343,4 @@ if __name__ == '__main__':
         else:
             detect()
 
-    socketserver.handle_client()
-    print(socketserver.msgrecv)
+
