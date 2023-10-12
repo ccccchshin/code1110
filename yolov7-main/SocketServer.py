@@ -23,11 +23,11 @@ def handle_client(conn):
         # 字串處理
         data = conn.recv(1024)  # String
         msgrecv = jpysocket.jpydecode(data)
-        # if not msgrecv:
+        if not msgrecv:
         #     # if data is not received break 檢查封包是否為空
         #     print("no get string data")
         #     # time.sleep(0.5)
-        #     break
+            break
         print("keyword: " + msgrecv)
         conn.send(data)
         # conn.sendall(msgrecv.encode("utf-8"))
@@ -90,91 +90,104 @@ def send_keyword(conn, store_keyword):
 
 # 接收圖片
 def file_receive(conn):
-    try:
-        while 1:
-        # image 處理格式
-            image = conn.recv(1024)  # image
-            image_arr = bytearray()
-
-            image_arr.extend(image)
-
-            # if len(image_arr) == 0:
-            #     print("img null or not?")
-            # #    break
-            if result_image is not None:
-                    cv2.imshow('app_image.JPG', result_image)
-
-                    print("img get failed3")
-                    cv2.waitKey(0)
-                    cv2.destroyAllWindows()
-                    print("get owari")
-            else:
-                print("失敗")
-
-            print("img get over")
-            # result_image = np.ascontiguousarray(bytearray(image_arr), dtype="uint8")
-
-            # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
-            result_image = cv2.imdecode(np.ascontiguousarray(bytearray(image_arr), dtype="uint8"), cv2.IMREAD_COLOR)
-
-            print("img get failed0")
-
-                # result_image = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/app_image.JPG',0)
-                # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
-                # print("img get failed1")
-                # count = 0
-                #寫入並儲存圖片
-                # cv2.imwrite('C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG', result_image)
-                # tempPath = 'C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG'
-                # count = count + 1
-                # print("img get failed2")
-
-                # result_image = cv2.imread(tempPath, 0)
-
-        # while True:
-        #     data = conn.recv(1024)
-        #     # print('data, ', data)
-        #     if not data or len(data) == 0:
-        #         print("no")
-        #         break
-        # conn.close()
-    except Exception:
-        print("connect bye")
-
-
-class MyTCPHandler(socketserver.BaseRequestHandler):
-    def handle(self):
-        print("get.....")
-        image1 = []
-        try:
-            while True:
-                data = self.request.recv(1024)
-                print('data, ', data)
-                if not data or len(data) == 0:
-                    print("no")
-                    break
-                image1.extend(data)
-            print("get over")
-            image = np.asarray(bytearray(image1), dtype="uint8")
-            image = cv2.imdecord(image, cv2.IMREAD_COLOR)
-            cv2.namedWindow("Image")
-            cv2.imshow("Image", image)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-            print("get owari")
-            self.request.sendall("get ur connect!".encode("utf-8"))
-        except Exception:
-            print(self.client_address, "connect bye")
-        finally:
-            self.request.close()
-
-    # def setup(self):
-    #     now_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    #     print(now_time)
-    #     print("connect build: ", self.client_address)
+    result = b''
+    print("in file_receive")
+    while True:
+        print("in while")
+        img = conn.recv(1024*20)  # 接收数据（适当调整缓冲区大小）
+        print("after img")
+        if not img:
+            print("null qq")
+            break
+        print("result")
+        result = result + img
+    print("8181 while loop")
+    with open('C:/Users/shin/410828608/yolov7-main/inference/image/app_image.jpg', 'wb') as file:
+        file.write(result)
+    print("Image received successfully")
+    # try:
+    #     rec_img = b''
+    #     # rec_img = bytes([])
+    #     while 1:
+    #         # image 處理格式
+    #         image = conn.recv(1024*10)  # image
+    #         # image_arr = bytearray()
+    #         # all_img = bytearray.append(image_arr)
+    #         # image_arr.extend(image)
     #
-    # def finish(self):
-    #     print("connect free")
+    #         if not image:
+    #             print("img null")
+    #             break
+    #         rec_img = rec_img + base64.b64decode(image)
+    #             #         cv2.imshow('app_image.JPG', result_image)
+    #             #
+    #             #         print("img get failed3")
+    #             #         cv2.waitKey(0)
+    #             #         cv2.destroyAllWindows()
+    #             #         print("get owari")
+    #             # else:
+    #             #     print("失敗")
+    #
+    #             # if not image or len(image) == 0:
+    #             #     print("img null or not?")
+    #             #     break
+    #             # else:
+    #             #     rec_img = rec_img + image
+    #         # if result_image is not None:
+    #         #         cv2.imshow('app_image.JPG', result_image)
+    #         #
+    #         #         print("img get failed3")
+    #         #         cv2.waitKey(0)
+    #         #         cv2.destroyAllWindows()
+    #         #         print("get owari")
+    #         # else:
+    #         #     print("失敗")
+    #         #
+    #         # print("img get over")
+    #         # # result_image = np.ascontiguousarray(bytearray(image_arr), dtype="uint8")
+    #         #
+    #         # # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
+    #         # result_image = cv2.imdecode(np.ascontiguousarray(bytearray(image_arr), dtype="uint8"), cv2.IMREAD_COLOR)
+    #         #
+    #         # print("img get failed0")
+    #         #
+    #         #     # result_image = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/app_image.JPG',0)
+    #         #     # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
+    #         #     # print("img get failed1")
+    #         #     # count = 0
+    #         #     #寫入並儲存圖片
+    #         #     # cv2.imwrite('C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG', result_image)
+    #         #     # tempPath = 'C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG'
+    #         #     # count = count + 1
+    #         #     # print("img get failed2")
+    #         #
+    #         #     # result_image = cv2.imread(tempPath, 0)
+    #     print(len(rec_img))
+    #     # if rec_img:
+    #     if len(rec_img) > 0:
+    #
+    #         np_arr = np.fromstring(rec_img, np.uint8)
+    #         result_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    #         cv2.imshow('Received Image', result_image)
+    #         cv2.waitKey(0)
+    #         cv2.destroyAllWindows()
+    #         conn.send("Image received".encode())
+    #     else:
+    #         conn.send("No image received".encode())
+    #     # print("get over1012")
+    #     # rec_img = base64.b64decode(rec_img)
+    #     # np_arr = np.frombuffer(rec_img, np.uint8)
+    #     # result = cv2.imdecode(np_arr, 1)
+    #     # cv2.imshow('image', result)
+    #     # cv2.waitKey(0)
+    #     # cv2.destroyAllWindows()
+    #     # conn.send("111".encode())
+    #
+    # except Exception as e:
+    #     print("Error:", e)
+    #     print("connect bye")
+    # finally:
+    #     conn.close()
 
 
 def server_program():
@@ -233,22 +246,7 @@ def file_server():
         t1 = threading.Thread(target=file_receive, args=(conn,))
         t1.start()
         print('fsocket call success')
-        # time.sleep(0.5)
         # conn.close()  # close the connection
-
-
-# def main():
-#     t = threading.Thread(target=server_program())  # 建立新的執行緒，讓執行緒去跑function
-#     t2 = threading.Thread(target=file_server())
-#     t.start()
-#     print("check")
-#     t2.start()
-
-    # img_server = socketserver.ThreadingTCPServer(("120.110.113.213", 12350), MyTCPHandler)
-    # print("run yes")
-    # img_server.serve_forever()
-    # t_image = threading.Thread(target=image_server())  # 建立新的執行緒，讓執行緒去跑function
-    # t_image.start()
 
 
 if __name__ == '__main__':
