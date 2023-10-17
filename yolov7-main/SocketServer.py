@@ -14,9 +14,12 @@ from PIL import Image
 
 # global msgrecv
 msgrecv = " "
-# 接收字串
-def handle_client(conn):
-    print("hello I am handle_client")
+file_len = 0
+
+
+# str ------------------------------------------------------------------------str
+
+def str_io(conn):
     global msgrecv
     # msgrecv = ""
     while True:
@@ -29,7 +32,8 @@ def handle_client(conn):
         #     # time.sleep(0.5)
             break
         print("keyword: " + msgrecv)
-        conn.send(data)
+        out_msg = jpysocket.jpyencode("keyword: " + msgrecv)
+        conn.send(out_msg)
         # conn.sendall(msgrecv.encode("utf-8"))
         # conn.sendall("OK".encode("utf-8"))
         print("get ok")
@@ -47,6 +51,28 @@ def handle_client(conn):
         # print("from connected user: " + str(data))
         # get detect.py 執行過後的結果
         # return(detect.py傳過來的圖片)
+
+
+def str_server():
+    host = "120.110.113.213"  # get the hostname
+    port = 12345  # initiate port no above 1024
+
+    # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
+    # socket.AF_UNIX => 在本機端進行串接
+    # socket.SOCK_STREAM => TCP宣告
+    str_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print('str socket created')
+    str_socket.bind((host, port))
+    print("str socket bind success")
+    str_socket.listen(5)  # listen用於server端一次可接受多少socket串接
+    print("str socket is now listening")
+
+    while True:
+        conn, address = str_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
+        print('Connect with ' + address[0] + ':' + str(address[1]))
+        t1 = threading.Thread(target=str_io, args=(conn,))
+        t1.start()
+        print('str socket call success')
 
 
 # def get_image(conn):
@@ -75,36 +101,83 @@ def handle_client(conn):
 
 
 # 送圖片
-def send_image(conn, image):
-    print("send_data", image)
-    conn.send(image)
-
+# def send_image(conn, image):
+#     print("send_data", image)
+#     conn.send(image)
 
 # 送文字
-def send_keyword(conn, store_keyword):
-    # data = data
-    print("send_data", store_keyword)
-    msgsend = jpysocket.jpyencode(store_keyword)  # Encript The Msg
-    conn.send(msgsend)
+# def send_keyword(conn, store_keyword):
+#     # data = data
+#     print("send_data", store_keyword)
+#     msgsend = jpysocket.jpyencode(store_keyword)  # Encript The Msg
+#     conn.send(msgsend)
+
+# len ------------------------------------------------------------------------------ len
+
+def len_io(conn):
+    global file_len
+    in_msg = conn.recv(1024)
+    jpy_msg = jpysocket.jpydecode(in_msg)
+    print(jpy_msg)
+    # 這裏應該會收到一個 json string 裏面包含 檔案長度， 這裏直接傳檔案長度
+    file_len = int(jpy_msg)
+    out_msg = jpysocket.jpyencode("len from Server.")
+    conn.send(out_msg)  # Send Msg
+    conn.close()
 
 
-# 接收圖片
-def file_receive(conn):
-    result = b''
-    print("in file_receive")
+def len_server():
+    host = "120.110.113.213"  # get the hostname
+    port = 12355  # initiate port no above 1024
+
+    # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
+    # socket.AF_UNIX => 在本機端進行串接
+    # socket.SOCK_STREAM => TCP宣告
+    str_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print('len socket created')
+    str_socket.bind((host, port))
+    print("len socket bind success")
+    str_socket.listen(5)  # listen用於server端一次可接受多少socket串接
+    print("len socket is now listening")
+
     while True:
-        print("in while")
-        img = conn.recv(1024*20)  # 接收数据（适当调整缓冲区大小）
-        print("after img")
-        if not img:
-            print("null qq")
-            break
-        print("result")
-        result = result + img
-    print("8181 while loop")
-    with open('C:/Users/shin/410828608/yolov7-main/inference/image/app_image.jpg', 'wb') as file:
-        file.write(result)
-    print("Image received successfully")
+        conn, address = str_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
+        print('Connect with ' + address[0] + ':' + str(address[1]))
+        t1 = threading.Thread(target=len_io, args=(conn,))
+        t1.start()
+        print('len socket call success')
+
+
+# file ------------------------------------------------------------------------------- file
+
+def receive_file(conn):
+    global file_len
+    f = open('image.jpg', 'wb')
+    eof = bytes([0x00, 0x00, 0x00])
+    total = 0
+    while total < file_len:
+        # print("receive")
+        data = conn.recv(8192)
+        f.write(data)
+        total += len(data)
+        # print(total)
+    f.close()
+    print("File Received!")
+    # result = b''
+    # print("in file_receive")
+    # while True:
+    #     print("in while")
+    #     img = conn.recv(1024*20)  # 接收数据（适当调整缓冲区大小）
+    #     print("after img")
+    #     if not img:
+    #         print("null qq")
+    #         break
+    #     print("result")
+    #     result = result + img
+    # print("8181 while loop")
+    # with open('C:/Users/shin/410828608/yolov7-main/inference/image/app_image.jpg', 'wb') as file:
+    #     file.write(result)
+    # print("Image received successfully")
     # try:
     #     rec_img = b''
     #     # rec_img = bytes([])
@@ -190,34 +263,31 @@ def file_receive(conn):
     #     conn.close()
 
 
-def server_program():
-    host = "120.110.113.213"  # get the hostname
-    port = 12345  # initiate port no above 1024
-
-    # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
-    # socket.AF_UNIX => 在本機端進行串接
-    # socket.SOCK_STREAM => TCP宣告
-    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print('socket created')
-
+def send_file(conn):
+    eof = bytes([0x00, 0x00, 0x00])
+    print("test1")
+    f = open("C:/Users/shin/410828608/yolov7-main/image.jpg", "rb")
+    print("test2")
+    data = f.read(8192)
+    print("test3")
     try:
-        server_socket.bind((host, port))  # bind用在server端要監聽的IP address跟Port
-        print("Socket bind success")
-    except socket.error as err:
-        print("Bind failed")
-        sys.exit()
+        while data:
+            print("test4")
+            conn.send(data)
+            print("send")
+            data = f.read(8192)
+    except Exception as e:
+        print(e)
+    f.close()
+    print("File Sent!")
 
-    server_socket.listen(5)  # listen用於server端一次可接受多少socket串接
-    print("Socket is now listening")
 
-    while 1:
-        conn, address = server_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
-        print('Connect with ' + address[0] + ':' + str(address[1]))
-        t1 = threading.Thread(target=handle_client, args=(conn,))
-        # time.sleep(0.5)
-        t1.start()
-        print('socket call success')
-        # conn.close()  # close the connection
+def file_io(conn):
+    receive_file(conn)
+    print("receive_file")
+    send_file(conn)
+    print("send_file")
+    conn.close()
 
 
 def file_server():
@@ -227,33 +297,32 @@ def file_server():
     # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
     # socket.AF_UNIX => 在本機端進行串接
     # socket.SOCK_STREAM => TCP宣告
-    fserver_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    print('fsocket created')
+    file_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    print('file socket created')
+    file_socket.bind((host, port))
+    print("file socket bind success")
+    file_socket.listen(5)  # listen用於server端一次可接受多少socket串接
+    print("file socket is now listening")
 
-    try:
-        fserver_socket.bind((host, port))  # bind用在server端要監聽的IP address跟Port
-        print("fSocket bind success")
-    except socket.error as err:
-        print("fBind failed")
-        sys.exit()
-
-    fserver_socket.listen(5)  # listen用於server端一次可接受多少socket串接
-    print("fSocket is now listening")
-
-    while 1:
-        conn, address = fserver_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
+    while True:
+        conn, address = file_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
         print('Connect with ' + address[0] + ':' + str(address[1]))
-        t1 = threading.Thread(target=file_receive, args=(conn,))
+        t1 = threading.Thread(target=file_io, args=(conn,))
         t1.start()
-        print('fsocket call success')
-        # conn.close()  # close the connection
+        print('file socket call success')
 
 
-if __name__ == '__main__':
-
-    str_thread = threading.Thread(target=server_program)
+def go():
+    str_thread = threading.Thread(target=str_server)
+    len_thread = threading.Thread(target=len_server)
     img_thread = threading.Thread(target=file_server)
     print("check0")
     str_thread.start()
+    len_thread.start()
     img_thread.start()
+
+
+if __name__ == '__main__':
+    go()
+
 
