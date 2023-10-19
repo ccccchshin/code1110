@@ -1,4 +1,6 @@
 import socket
+import detect
+# import module
 import socketserver
 import time
 import numpy as np
@@ -10,6 +12,7 @@ import threading
 import sys
 import json
 import os
+import subprocess
 from PIL import Image
 
 # global msgrecv
@@ -152,7 +155,7 @@ def len_server():
 
 def receive_file(conn):
     global file_len
-    f = open('image.jpg', 'wb')
+    f = open('image.jpg', 'wb+')
     eof = bytes([0x00, 0x00, 0x00])
     total = 0
     while total < file_len:
@@ -163,6 +166,8 @@ def receive_file(conn):
         # print(total)
     f.close()
     print("File Received!")
+
+
     # result = b''
     # print("in file_receive")
     # while True:
@@ -266,7 +271,7 @@ def receive_file(conn):
 def send_file(conn):
     eof = bytes([0x00, 0x00, 0x00])
     print("test1")
-    f = open("C:/Users/shin/410828608/yolov7-main/image.jpg", "rb")
+    f = open("C:/Users/shin/410828608/yolov7-main/image.jpg", "rb+")
     print("test2")
     data = f.read(8192)
     print("test3")
@@ -285,6 +290,12 @@ def send_file(conn):
 def file_io(conn):
     receive_file(conn)
     print("receive_file")
+    # os.system('detect.py')
+    # os.system('ServerTest.py')
+    detect()
+    # python_script_path = 'detect.py'
+    # script_args = ['C:/Users/shin/410828608/yolov7-main/image.jpg',
+    #                'C:/Users/shin/runs/train/exp14/weights/best.pt']
     send_file(conn)
     print("send_file")
     conn.close()

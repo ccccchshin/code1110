@@ -1,9 +1,11 @@
 import argparse
 import operator
+# import ServerTest
 import socket
 import SocketServer
 import time
 from pathlib import Path
+from ServerTest import msgrecv
 
 import cv2
 import torch
@@ -267,8 +269,10 @@ def crop_image(xy, img, id, path):
     # SocketServer.handle_client(SocketServer.conn)
     # print("msgrecv:",SocketServer.msgrecv)
 
-    keyword = SocketServer.msgrecv  # get socket keyword 接socket的字串
-    search_keyword(x, keyword)
+    # keyword = SocketServer.msgrecv  # get socket keyword 接socket的字串
+    #keyword = ServerTest.msgrecv
+    print("hello i am keyword : " + keyword)
+    # search_keyword(x, keyword)
 
     print(x, end="\n")
 
@@ -291,7 +295,6 @@ def search_keyword(all_words, keyword):
 #         test[i]++
 #     }
 # }
-
     for i in all_words:
         if operator.contains(all_words(i), keyword):
             arr[i] = arr[i] + 1
@@ -305,7 +308,9 @@ def search_keyword(all_words, keyword):
 
 
 if __name__ == '__main__':
-
+    keyword = msgrecv
+    print(keyword)
+    print('Hello world')
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt',
