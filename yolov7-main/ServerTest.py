@@ -74,9 +74,10 @@
 # #         print("Go away")
 #import detect
 #detect()
-msgrecv = "string"
+from SocketServer import msgrecv
+msgrecv = msgrecv
+#msgrecv = "string"
 # global msgrecv
-
 
 
 # print('hello world')

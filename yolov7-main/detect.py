@@ -1,5 +1,6 @@
 import argparse
 import operator
+
 # import ServerTest
 import socket
 import SocketServer
@@ -21,7 +22,7 @@ import os
 
 import numpy as np
 
-import SocketServer
+#import SocketServer
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
@@ -307,10 +308,17 @@ def search_keyword(all_words, keyword):
     # 要回傳socket包回去
 
 
+# def init_keyword():
+#     keyword = ""
+
+
 if __name__ == '__main__':
-    keyword = msgrecv
-    print(keyword)
+    # keyword = msgrecv
+    # print(keyword)
+    # keyword = "123"
+    # print(SocketServer.init_keyword(keyword))
     print('Hello world')
+
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt',

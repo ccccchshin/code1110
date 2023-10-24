@@ -19,8 +19,11 @@ from PIL import Image
 msgrecv = " "
 file_len = 0
 
-
 # str ------------------------------------------------------------------------str
+
+# def init_keyword(keyword):
+#     keyword = msgrecv
+#     return keyword
 
 def str_io(conn):
     global msgrecv
@@ -292,7 +295,7 @@ def file_io(conn):
     print("receive_file")
     # os.system('detect.py')
     # os.system('ServerTest.py')
-    detect()
+    # detect()
     # python_script_path = 'detect.py'
     # script_args = ['C:/Users/shin/410828608/yolov7-main/image.jpg',
     #                'C:/Users/shin/runs/train/exp14/weights/best.pt']
@@ -304,6 +307,7 @@ def file_io(conn):
 def file_server():
     host = "120.110.113.213"  # get the hostname
     port = 12350  # initiate port no above 1024
+
 
     # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
     # socket.AF_UNIX => 在本機端進行串接
