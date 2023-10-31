@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import socket
 # import detect
 # import module
@@ -21,6 +23,7 @@ file_len = 0
 
 def change_str(str):
     msgrecv = str
+    return msgrecv
 
 # str ------------------------------------------------------------------------str
 
@@ -309,7 +312,7 @@ def file_io(conn):
     receive_file(conn)
     print("receive_file")
     # detect()
-    subprocess.run(['python', 'detect.py'])
+    subprocess.run(['python', 'detect.py'], text=True)
     # os.system('ServerTest.py')
     # python_script_path = 'detect.py'
     # script_args = ['C:/Users/shin/410828608/yolov7-main/image.jpg',
