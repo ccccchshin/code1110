@@ -16,7 +16,7 @@ import subprocess
 from PIL import Image
 
 # global msgrecv
-msgrecv = " "
+msgrecv = ""
 file_len = 0
 
 # str ------------------------------------------------------------------------str
@@ -25,8 +25,15 @@ file_len = 0
 #     keyword = msgrecv
 #     return keyword
 
+# def set_str(keyword):
+#     msgrecv = keyword
+#
+#
+# def get_str(keyword):
+#     return msgrecv
+
 def str_io(conn):
-    global msgrecv
+    # global msgrecv
     # msgrecv = ""
     while True:
         # 字串處理
@@ -38,6 +45,7 @@ def str_io(conn):
         #     # time.sleep(0.5)
             break
         print("keyword: " + msgrecv)
+        # get_str(msgrecv)
         out_msg = jpysocket.jpyencode("keyword: " + msgrecv)
         conn.send(out_msg)
         # conn.sendall(msgrecv.encode("utf-8"))
@@ -46,6 +54,7 @@ def str_io(conn):
 
     print("conn 8181")
     conn.close()
+    # return msgrecv
 
         # os.system('detect.py')
         # detect.py have to catch 2 args image & keyword
@@ -76,8 +85,9 @@ def str_server():
     while True:
         conn, address = str_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
         print('Connect with ' + address[0] + ':' + str(address[1]))
-        t1 = threading.Thread(target=str_io, args=(conn,))
-        t1.start()
+        str_io(conn)
+        # t1 = threading.Thread(target=str_io, args=(conn,))
+        # t1.start()
         print('str socket call success')
 
 
@@ -149,8 +159,9 @@ def len_server():
     while True:
         conn, address = str_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
         print('Connect with ' + address[0] + ':' + str(address[1]))
-        t1 = threading.Thread(target=len_io, args=(conn,))
-        t1.start()
+        len_io(conn)
+        # t1 = threading.Thread(target=len_io, args=(conn,))
+        # t1.start()
         print('len socket call success')
 
 
@@ -293,9 +304,9 @@ def send_file(conn):
 def file_io(conn):
     receive_file(conn)
     print("receive_file")
-    # os.system('detect.py')
-    # os.system('ServerTest.py')
     # detect()
+    os.system('detect.py')
+    # os.system('ServerTest.py')
     # python_script_path = 'detect.py'
     # script_args = ['C:/Users/shin/410828608/yolov7-main/image.jpg',
     #                'C:/Users/shin/runs/train/exp14/weights/best.pt']
@@ -309,7 +320,7 @@ def file_server():
     port = 12350  # initiate port no above 1024
 
 
-    # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
+        # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
     # socket.AF_UNIX => 在本機端進行串接
     # socket.SOCK_STREAM => TCP宣告
     file_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -322,8 +333,9 @@ def file_server():
     while True:
         conn, address = file_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
         print('Connect with ' + address[0] + ':' + str(address[1]))
-        t1 = threading.Thread(target=file_io, args=(conn,))
-        t1.start()
+        file_io(conn)
+        # t1 = threading.Thread(target=file_io, args=(conn,))
+        # t1.start()
         print('file socket call success')
 
 

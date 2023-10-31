@@ -74,10 +74,13 @@
 # #         print("Go away")
 #import detect
 #detect()
-from SocketServer import msgrecv
-msgrecv = msgrecv
+import Str_test as st
+# from SocketServer import msgrecv
+# msgrecv = msgrecv
 #msgrecv = "string"
 # global msgrecv
 
+msgrecv = "123"
 
-# print('hello world')
+print(st.send(msgrecv))
+

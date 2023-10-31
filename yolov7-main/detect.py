@@ -1,12 +1,12 @@
 import argparse
 import operator
 
-# import ServerTest
+import ServerTest
 import socket
-import SocketServer
+import SocketServer as soc
 import time
 from pathlib import Path
-from ServerTest import msgrecv
+# from ServerTest import msgrecv
 
 import cv2
 import torch
@@ -22,7 +22,6 @@ import os
 
 import numpy as np
 
-#import SocketServer
 from models.experimental import attempt_load
 from utils.datasets import LoadStreams, LoadImages
 from utils.general import check_img_size, check_requirements, check_imshow, non_max_suppression, apply_classifier, \
@@ -271,8 +270,11 @@ def crop_image(xy, img, id, path):
     # print("msgrecv:",SocketServer.msgrecv)
 
     # keyword = SocketServer.msgrecv  # get socket keyword 接socket的字串
-    #keyword = ServerTest.msgrecv
-    print("hello i am keyword : " + keyword)
+
+    # keyword = ServerTest.msgrecv --
+    keyword = soc.get_str()
+    print("ddd keyword: " + keyword)
+    # print("hello i am keyword : " + keyword)
     # search_keyword(x, keyword)
 
     print(x, end="\n")
@@ -317,8 +319,7 @@ if __name__ == '__main__':
     # print(keyword)
     # keyword = "123"
     # print(SocketServer.init_keyword(keyword))
-    print('Hello world')
-
+    # print('Hi i am detect str: '+ soc.msgrecv)
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt',
