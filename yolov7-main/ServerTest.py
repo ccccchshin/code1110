@@ -74,13 +74,18 @@
 # #         print("Go away")
 #import detect
 #detect()
-import Str_test as st
+# import Str_test as st
 # from SocketServer import msgrecv
 # msgrecv = msgrecv
-#msgrecv = "string"
+# msgrecv = "string"
 # global msgrecv
+#
+# msgrecv = "123"
+#
+# print(st.send(msgrecv))
+def ttt():
+    a = 123
+    return a
 
-msgrecv = "123"
-
-print(st.send(msgrecv))
-
+if __name__ == "__main__":
+    print(ttt())

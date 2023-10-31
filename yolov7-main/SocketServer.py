@@ -1,5 +1,5 @@
 import socket
-import detect
+# import detect
 # import module
 import socketserver
 import time
@@ -16,8 +16,11 @@ import subprocess
 from PIL import Image
 
 # global msgrecv
-msgrecv = ""
+msgrecv = "11"
 file_len = 0
+
+def change_str(str):
+    msgrecv = str
 
 # str ------------------------------------------------------------------------str
 
@@ -39,6 +42,7 @@ def str_io(conn):
         # 字串處理
         data = conn.recv(1024)  # String
         msgrecv = jpysocket.jpydecode(data)
+        change_str(msgrecv)
         if not msgrecv:
         #     # if data is not received break 檢查封包是否為空
         #     print("no get string data")
@@ -305,7 +309,7 @@ def file_io(conn):
     receive_file(conn)
     print("receive_file")
     # detect()
-    os.system('detect.py')
+    subprocess.run(['python', 'detect.py'])
     # os.system('ServerTest.py')
     # python_script_path = 'detect.py'
     # script_args = ['C:/Users/shin/410828608/yolov7-main/image.jpg',

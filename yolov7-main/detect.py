@@ -173,7 +173,7 @@ def detect(save_img=False):
 
                     if names[int(cls)] == 'nutrition':
                         f_name = save_path.split(".")[0]
-                        # print(xyxy)
+                        # print('i am f_name: ' + f_name)
                         crop_image(xyxy, im0, imgNo, f_name)
                         imgNo = imgNo + 1
 
@@ -241,7 +241,7 @@ def crop_image(xy, img, id, path):
     x2 = int(xy[2])
     y2 = int(xy[3])
     print(x1, y1, x2, y2)
-
+    print('id: ' + path)
     cropped_image = img[y1:y2, x1:x2]
     cv2.imshow("cropped", cropped_image)
 
@@ -253,7 +253,6 @@ def crop_image(xy, img, id, path):
     # result = ocr_model.ocr(img_path, det=False)
     result = ocr_model.ocr(img_path)
     s = " ".join('%s' % id for id in result)  # list to string
-
 
     # output字
 
@@ -272,8 +271,8 @@ def crop_image(xy, img, id, path):
     # keyword = SocketServer.msgrecv  # get socket keyword 接socket的字串
 
     # keyword = ServerTest.msgrecv --
-    keyword = soc.get_str()
-    print("ddd keyword: " + keyword)
+    # keyword = soc.get_str()
+    # print("ddd keyword: " + keyword)
     # print("hello i am keyword : " + keyword)
     # search_keyword(x, keyword)
 
@@ -287,17 +286,17 @@ def search_keyword(all_words, keyword):
     arr = []
     store_keyword = []
 
-# 成分  100克 list(0)
-# 脂肪   50克 list(1)
-#
-# for(int i=0;i<=arr.length;i++){
-#     test[]
-#     arr[] = {0,1,2,3,4,5}
-#     arr2[] = {3,0,3,3,3,3}
-#     if(arr[i] == arr2[i]){
-#         test[i]++
-#     }
-# }
+    # 成分  100克 list(0)
+    # 脂肪   50克 list(1)
+    #
+    # for(int i=0;i<=arr.length;i++){
+    #     test[]
+    #     arr[] = {0,1,2,3,4,5}
+    #     arr2[] = {3,0,3,3,3,3}
+    #     if(arr[i] == arr2[i]){
+    #         test[i]++
+    #     }
+    # }
     for i in all_words:
         if operator.contains(all_words(i), keyword):
             arr[i] = arr[i] + 1
@@ -314,47 +313,43 @@ def search_keyword(all_words, keyword):
 #     keyword = ""
 
 
-if __name__ == '__main__':
-    # keyword = msgrecv
-    # print(keyword)
-    # keyword = "123"
-    # print(SocketServer.init_keyword(keyword))
-    # print('Hi i am detect str: '+ soc.msgrecv)
+# keyword = msgrecv
+# print(keyword)
+# keyword = "123"
+# print(SocketServer.init_keyword(keyword))
+print('Hi i am detect str: ' + soc.msgrecv)
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--weights', nargs='+', type=str, default='yolov7-tiny.pt',
-                        help='model.pt path(s)')  # help()函數是查看函數或模組用途的詳細說明
-    parser.add_argument('--source', type=str, default='inference/images', help='source')  # file/folder, 0 for webcam
-    parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
-    parser.add_argument('--conf-thres', type=float, default=0.2, help='object confidence threshold')
-    parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--view-img', action='store_true', help='display results')
-    parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
-    parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')
-    parser.add_argument('--nosave', action='store_true', help='do not save images/videos')
-    parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
-    parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
-    parser.add_argument('--augment', action='store_true', help='augmented inference')
-    parser.add_argument('--update', action='store_true', help='update all models')
-    parser.add_argument('--project', default='runs/detect', help='save results to project/name')
-    parser.add_argument('--name', default='exp', help='save results to project/name')
-    parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
-    opt = parser.parse_args()
+parser = argparse.ArgumentParser()
+parser.add_argument('--weights', nargs='+', type=str, default='C:/Users/shin/runs/train/exp14/weights/best.pt',
+                    help='model.pt path(s)')  # help()函數是查看函數或模組用途的詳細說明
+parser.add_argument('--source', type=str, default='C:/Users/shin/410828608/yolov7-main/image.jpg', help='source')  # file/folder, 0 for webcam
+parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
+parser.add_argument('--conf-thres', type=float, default=0.2, help='object confidence threshold')
+parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')
+parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
+parser.add_argument('--view-img', action='store_true', help='display results')
+parser.add_argument('--save-txt', action='store_true', help='save results to *.txt')
+parser.add_argument('--save-conf', action='store_true', help='save confidences in --save-txt labels')
+parser.add_argument('--nosave', action='store_true', help='do not save images/videos')
+parser.add_argument('--classes', nargs='+', type=int, help='filter by class: --class 0, or --class 0 2 3')
+parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
+parser.add_argument('--augment', action='store_true', help='augmented inference')
+parser.add_argument('--update', action='store_true', help='update all models')
+parser.add_argument('--project', default='runs/detect', help='save results to project/name')
+parser.add_argument('--name', default='exp', help='save results to project/name')
+parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
+parser.add_argument('--no-trace', action='store_true', help='don`t trace model')
+opt = parser.parse_args()
 
-    # opencv裁剪yolo擷取到的範圍
-    # 存到某個變數 + 放在path裡面
-    # assign給img_path後, 再從img_path裡辨識文字
+# opencv裁剪yolo擷取到的範圍
+# 存到某個變數 + 放在path裡面
+# assign給img_path後, 再從img_path裡辨識文字
+print(opt)
 
-    print(opt)
-
-    with torch.no_grad():
-        if opt.update:  # update all models (to fix SourceChangeWarning)
-            for opt.weights in ['C:/Users/shin/runs/train/exp14/weights/best.pt']:
-                detect()
-                strip_optimizer(opt.weights)
-        else:
+with torch.no_grad():
+    if opt.update:  # update all models (to fix SourceChangeWarning)
+        for opt.weights in ['C:/Users/shin/runs/train/exp14/weights/best.pt']:
             detect()
-
-
+            strip_optimizer(opt.weights)
+    else:
+        detect()
