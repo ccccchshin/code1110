@@ -2,6 +2,7 @@
 
 import argparse
 import operator
+import sys
 
 import ServerTest
 import socket
@@ -31,6 +32,7 @@ from utils.general import check_img_size, check_requirements, check_imshow, non_
 from utils.plots import plot_one_box
 from utils.torch_utils import select_device, load_classifier, time_synchronized, TracedModel
 
+ser_keyword = ""
 
 #
 # import pytesseract
@@ -270,22 +272,31 @@ def crop_image(xy, img, id, path):
     # SocketServer.handle_client(SocketServer.conn)
     # print("msgrecv:",SocketServer.msgrecv)
 
-    # keyword = SocketServer.msgrecv  # get socket keyword 接socket的字串
-
+    keyword = get_txtkey()  # get socket keyword 接socket的字串
+    print("keyword = ", keyword)
     # keyword = ServerTest.msgrecv --
     # keyword = soc.get_str()
     # print("ddd keyword: " + keyword)
     # print("hello i am keyword : " + keyword)
-    # search_keyword(x, keyword)
 
-    print(x, end="\n")
+
+
+    all_keyword = np.array(x)
+
+    # print("this is all_keyword = ")
+    # for i in all_keyword:
+    #     print(i)
+
+    search_keyword(all_keyword, keyword)
+
+    # print(x, end="\n")
 
     for i in x:
         print(i)
 
 
 def search_keyword(all_words, keyword):
-    arr = []
+    arr = [0] * len(all_words)
     store_keyword = []
 
     # 成分  100克 list(0)
@@ -299,27 +310,40 @@ def search_keyword(all_words, keyword):
     #         test[i]++
     #     }
     # }
-    for i in all_words:
-        if operator.contains(all_words(i), keyword):
+    for i in range(len(all_words)):
+        # if operator.contains(all_words(i), keyword):
+        if keyword in all_words[i]:
             arr[i] = arr[i] + 1
-    for i in arr:
+    for i in range(len(arr)):
         if arr[i] != 0:
-            store_keyword[i] = all_words(i)
+            store_keyword.append(all_words[i])
+            print("all_words[i] = ", all_words[i])
 
-    print(store_keyword)
+    print("contains = ", store_keyword)
     # SocketServer.send_String(store_keyword)
     # 要回傳socket包回去
 
 
-# def init_keyword():
-#     keyword = ""
-
+def get_txtkey():
+    temp = file_contents.split('"')
+    key = temp[1].strip('"')
+    return key
 
 # keyword = msgrecv
 # print(keyword)
 # keyword = "123"
 # print(SocketServer.init_keyword(keyword))
-print('Hi i am detect str: ' + soc.msgrecv)
+
+
+file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
+file_contents = ""
+# 打開文件以讀取模式
+with open(file_path, "r") as file:
+    file_contents = file.read()  # 讀取文件內容並存儲在file_contents變數中
+
+# 現在你可以使用file_contents變數來訪問文件的內容
+print("文件內容:")
+print(file_contents)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--weights', nargs='+', type=str, default='C:/Users/shin/runs/train/exp14/weights/best.pt',

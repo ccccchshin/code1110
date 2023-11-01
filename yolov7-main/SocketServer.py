@@ -17,13 +17,14 @@ import os
 import subprocess
 from PIL import Image
 
-# global msgrecv
+
+global msgrecv
 msgrecv = "11"
 file_len = 0
 
-def change_str(str):
-    msgrecv = str
-    return msgrecv
+# def change_str(str):
+#     msgrecv = str
+#     return msgrecv
 
 # str ------------------------------------------------------------------------str
 
@@ -45,7 +46,13 @@ def str_io(conn):
         # 字串處理
         data = conn.recv(1024)  # String
         msgrecv = jpysocket.jpydecode(data)
-        change_str(msgrecv)
+
+        file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
+        with open(file_path, "w") as file:
+            new_contents = msgrecv
+            file.write(new_contents)
+        print("已被覆蓋")
+
         if not msgrecv:
         #     # if data is not received break 檢查封包是否為空
         #     print("no get string data")
@@ -312,7 +319,10 @@ def file_io(conn):
     receive_file(conn)
     print("receive_file")
     # detect()
+
+    # detect.init_keyword(msgrecv)
     subprocess.run(['python', 'detect.py'], text=True)
+
     # os.system('ServerTest.py')
     # python_script_path = 'detect.py'
     # script_args = ['C:/Users/shin/410828608/yolov7-main/image.jpg',
