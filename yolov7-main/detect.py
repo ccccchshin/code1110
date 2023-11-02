@@ -4,7 +4,7 @@ import argparse
 import operator
 import sys
 
-import ServerTest
+# import ServerTest
 import socket
 import SocketServer as soc
 import time
@@ -257,9 +257,7 @@ def crop_image(xy, img, id, path):
     # result = ocr_model.ocr(img_path, det=False)
     result = ocr_model.ocr(img_path)
     s = " ".join('%s' % id for id in result)  # list to string
-
     # output字
-
     x = s.split(")],")  # string split to list
     # 接到圖、字
     # 下方main function跑圖 這邊存圖裡的字 + socket會有一個字串
@@ -269,30 +267,114 @@ def crop_image(xy, img, id, path):
     # 去get y座標 高取兩個y座標的中間值 長度對應圖片長度就行 去做標示
     # 最後用socket回傳
 
-    # SocketServer.handle_client(SocketServer.conn)
-    # print("msgrecv:",SocketServer.msgrecv)
-
     keyword = get_txtkey()  # get socket keyword 接socket的字串
     print("keyword = ", keyword)
-    # keyword = ServerTest.msgrecv --
-    # keyword = soc.get_str()
-    # print("ddd keyword: " + keyword)
-    # print("hello i am keyword : " + keyword)
-
-
 
     all_keyword = np.array(x)
 
-    # print("this is all_keyword = ")
-    # for i in all_keyword:
-    #     print(i)
-
-    search_keyword(all_keyword, keyword)
+    store_keyword = search_keyword(all_keyword, keyword)
+    draw_pic(store_keyword,cropped_image)
 
     # print(x, end="\n")
-
     for i in x:
         print(i)
+
+
+def draw_pic(store_keyword, cropped_image):
+
+    # arr = []
+    # print("store_keyword = ", store_keyword)
+    # print("store_keyword[0][0] = ", store_keyword[0][5])
+    # arr = [[] for _ in range(len(store_keyword))]
+    # img = cropped_image
+    img_np = np.asarray(cropped_image)
+    #
+    # coords_list = [eval(coords_str.split('], [')[0] + "]") for coords_str in store_keyword]
+    test = ""
+    # i = 0
+    # count = 0
+    # flag = True
+
+    for i in range(len(store_keyword)):
+        # flag = True
+        # count = 0
+        print("i = ", i)
+
+        if "], (" in store_keyword[i]:
+            start_index = store_keyword[i].find("], (")
+            if start_index != -1:
+                for j in range(start_index):
+                    # test.append(store_keyword[i][j])
+                    test = test + store_keyword[i][j]
+            else:
+                print("can not find")
+        #
+        # while flag:
+        #     if "], (" in store_keyword[i]:
+        #         start_index = store_keyword[i].find("], (")
+        #         i = 0
+        #         flag = False
+        #     else:
+        #         test.append(store_keyword[i][count])
+        #         print("count = ", count)
+        #         print("store_keyword = ", store_keyword[i][count])
+        #         count = count + 1
+        final = test.replace('[[','')
+        print("final = ", final)
+    # 轉換成浮點數型別
+    # float_coords_list = []
+    # for coords in coords_list:
+    #     # float_coords = []
+    #     float_coords = [[float(coord) for coord in point] for point in coords]
+    #     float_coords_list.append(float_coords)
+        # for point in coords:
+        #     float_point = [float(coord) for coord in point]
+        #     float_coords.append(float_point)
+        # float_coords_list.append(float_coords)
+
+    # print(float_coords_list)
+    #
+    # # x_index = 0
+    # for x_index in range(len(store_keyword)):
+    #     # arr[0][0] = [[32.0, 648.0], [155.0, 648.0], [155.0, 713.0], [32.0, 713.0]]
+    #     # arr[0][1] = ('脂肪', 0.9324982166290283)
+    #     arr[x_index].append(store_keyword[x_index][0])
+    #
+    #     print("append = ", store_keyword[x_index][0])
+    #     #     y_index = y_index + 1
+    #     # x_index = x_index + 1
+    # for i in arr:
+    #     print("arr = ", i)
+    # 畫幾次
+    i = 0
+    while i in range(len(store_keyword)):
+        # x1 = int(arr[i][0][0][0]) #0000 32
+        # y1 = int(arr[i][0][0][1]) #0001 648
+        # x2 = int(arr[i][0][2][0]) #0020 155
+        # y2 = int(arr[i][0][2][1]) #0021 713
+
+        final_list =
+        pts = np.array(final_list)
+        temp_img = cv2.polylines(img_np, [pts], True, (0, 0, 255), 3)
+
+    # img_from_np = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
+    cv2.imshow("xxxxxx", temp_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+        # print(x1, y1, x2, y2)
+        # # print('id: ' + path)
+
+        # cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 3)
+    # i = 0
+    # x1 = []
+    # x2 = []
+    # keyword_XY = []
+    # while i < len(store_keyword):
+    #     keyword_XY.append(store_keyword[i][0])
+    #     x1[i] = int(min(min(min(keyword_XY[0][i], keyword_XY[1][i]), keyword_XY[2][i]), keyword_XY[3][i]))
+    #     x2[i] = int(max(max(max(keyword_XY[0][i], keyword_XY[1][i]), keyword_XY[2][i]), keyword_XY[3][i]))
+
+
 
 
 def search_keyword(all_words, keyword):
@@ -316,10 +398,11 @@ def search_keyword(all_words, keyword):
             arr[i] = arr[i] + 1
     for i in range(len(arr)):
         if arr[i] != 0:
-            store_keyword.append(all_words[i])
+            store_keyword.append(all_words[i]+")]")
             print("all_words[i] = ", all_words[i])
 
     print("contains = ", store_keyword)
+    return store_keyword
     # SocketServer.send_String(store_keyword)
     # 要回傳socket包回去
 
@@ -328,12 +411,6 @@ def get_txtkey():
     temp = file_contents.split('"')
     key = temp[1].strip('"')
     return key
-
-# keyword = msgrecv
-# print(keyword)
-# keyword = "123"
-# print(SocketServer.init_keyword(keyword))
-
 
 file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
 file_contents = ""

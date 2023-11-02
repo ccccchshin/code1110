@@ -1,91 +1,33 @@
-# import threading
-# import time
-#
-#
-# def aa():
-#     i = 0
-#     while i < 5:
-#         i = i + 1
-#         time.sleep(0.5)
-#         print('A:', i)
-#
-#
-# def bb():
-#     i = 0
-#     while i < 50:
-#         i = i + 10
-#         time.sleep(0.5)
-#         print('B:', i)
-#
-#
-# if __name__ == '__main__':
-#     a = threading.Thread(target=aa)
-#     print("hello aa")
-#     b = threading.Thread(target=bb)
-#     print("hello bb")
-#     a.start()
-#     b.start()
+import numpy as np
 
+# 原始字串列表
+string_list = [
+    "[[[32.0, 648.0], [155.0, 648.0], [155.0, 713.0], [32.0, 713.0]], ('脂肪', 0.9324982166290283)]",
+    "[[[84.0, 728.0], [313.0, 731.0], [312.0, 791.0], [83.0, 787.0]], ('和脂肪', 0.9711733460426331)]",
+    "[[[86.0, 804.0], [313.0, 809.0], [312.0, 868.0], [84.0, 863.0]], ('反式脂肪', 0.9931995868682861)]"
+]
 
-# import socket
-# import sys
-#
-# HOST = "120.110.113.213"
-# PORT = 12345
-#
-# s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-# print('socket created')
-#
-# # Bind socket to Host and Port
-# try:
-#     s.bind((HOST, PORT))
-# except socket.error as err:
-#     print("Bind Failed")
-#     sys.exit()
-#
-# print("Socket Bind Success!")
-#
-# # listen(): This method sets up and start TCP listener.
-# s.listen(10)
-# print("Socket is now listening")
-#
-# while 1:
-#     conn, addr = s.accept()
-#     print('Connect with ' + addr[0] + ':' + str(addr[1]))
-#     buf = conn.recv(64)
-#     print(buf)
-# s.close()
-#
-# # import socket               # Import socket module
-# #
-# # soc = socket.socket()         # Create a socket object
-# # host = "localhost"         # Get local machine name
-# # port = 2004                # Reserve a port for your service.
-# # soc.bind((host, port))       # Bind to the port
-# # soc.listen(5)                 # Now wait for client connection.
-# # while True:
-# #     conn, addr = soc.accept()     # Establish connection with client.
-# #     print('Got connection from', addr)
-# #     msg = conn.recv(1024)
-# #     print(msg)
-# #     if msg == "Hello Server":
-# #         print("Hii everyone")
-# #     else:
-# #         print("Go away")
-#import detect
-#detect()
-# import Str_test as st
-# from SocketServer import msgrecv
-# msgrecv = msgrecv
-# msgrecv = "string"
-# global msgrecv
-#
-# msgrecv = "123"
-#
-# print(st.send(msgrecv))
-def ttt():
-    a = 123
-    return a
+# 解析每個字串元素，提取坐標部分，並轉換為 NumPy 陣列
+float_arrays = []
+print("float_arrays = ", float_arrays)
+for string in string_list:
+    # 使用 eval 函數提取坐標部分並轉為 Python 列表
 
-if __name__ == "__main__":
-    print(ttt())
+    s = " ".join('%s' % id for id in string_list)
+    coords_str = s.split("], [")  # 提取坐標部分
+    print("coords_str = ", coords_str)
+
+    coords_list = eval("[" + coords_str + "]")
+    print("coords_list = ", coords_list)
+
+    # 將 Python 列表轉為 NumPy 陣列
+    coords_array = np.array(coords_list, dtype=float)
+    print("coords_array = ", coords_array)
+
+    float_arrays.append(coords_array)
+    print("float_arrays = ", float_arrays)
+
+# 現在 float_arrays 中包含了每個字串元素的坐標部分的浮點數陣列
+# 打印結果
+for arr in float_arrays:
+    print(arr)

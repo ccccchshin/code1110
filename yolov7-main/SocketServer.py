@@ -22,22 +22,7 @@ global msgrecv
 msgrecv = "11"
 file_len = 0
 
-# def change_str(str):
-#     msgrecv = str
-#     return msgrecv
-
-# str ------------------------------------------------------------------------str
-
-# def init_keyword(keyword):
-#     keyword = msgrecv
-#     return keyword
-
-# def set_str(keyword):
-#     msgrecv = keyword
-#
-#
-# def get_str(keyword):
-#     return msgrecv
+# str ------------------------------------------------------------------------ str
 
 def str_io(conn):
     # global msgrecv
@@ -298,16 +283,11 @@ def receive_file(conn):
 
 def send_file(conn):
     eof = bytes([0x00, 0x00, 0x00])
-    print("test1")
     f = open("C:/Users/shin/410828608/yolov7-main/image.jpg", "rb+")
-    print("test2")
     data = f.read(8192)
-    print("test3")
     try:
         while data:
-            print("test4")
             conn.send(data)
-            print("send")
             data = f.read(8192)
     except Exception as e:
         print(e)
@@ -318,9 +298,6 @@ def send_file(conn):
 def file_io(conn):
     receive_file(conn)
     print("receive_file")
-    # detect()
-
-    # detect.init_keyword(msgrecv)
     subprocess.run(['python', 'detect.py'], text=True)
 
     # os.system('ServerTest.py')
