@@ -282,29 +282,16 @@ def crop_image(xy, img, id, path):
 
 def draw_pic(store_keyword, cropped_image):
 
-    # arr = []
-    # print("store_keyword = ", store_keyword)
-    # print("store_keyword[0][0] = ", store_keyword[0][5])
-    # arr = [[] for _ in range(len(store_keyword))]
-    # img = cropped_image
     img_np = np.asarray(cropped_image)
-    #
-    # coords_list = [eval(coords_str.split('], [')[0] + "]") for coords_str in store_keyword]
     test = ""
-    # i = 0
-    # count = 0
-    # flag = True
-
+    final = ''
     for i in range(len(store_keyword)):
-        # flag = True
-        # count = 0
-        print("i = ", i)
+        # print("i = ", i)
 
         if "], (" in store_keyword[i]:
             start_index = store_keyword[i].find("], (")
             if start_index != -1:
                 for j in range(start_index):
-                    # test.append(store_keyword[i][j])
                     test = test + store_keyword[i][j]
             else:
                 print("can not find")
@@ -321,60 +308,55 @@ def draw_pic(store_keyword, cropped_image):
         #         count = count + 1
         final = test.replace('[[','')
         print("final = ", final)
-    # 轉換成浮點數型別
-    # float_coords_list = []
-    # for coords in coords_list:
-    #     # float_coords = []
-    #     float_coords = [[float(coord) for coord in point] for point in coords]
-    #     float_coords_list.append(float_coords)
-        # for point in coords:
-        #     float_point = [float(coord) for coord in point]
-        #     float_coords.append(float_point)
-        # float_coords_list.append(float_coords)
 
-    # print(float_coords_list)
+    final = final.replace(' ', '')
+    float_arrays = []
+    temp_str = ''
+    sign = 0
+    count = 0
+
+    for char in final:
+        if char == '[':
+            count += 1
+        elif char == ']':
+            count += 1
+        elif char == ',':
+            sign += 1
+            if sign == 2:
+                sign = 0
+                continue
+        temp_str += char
+        if count == 2:
+            print("temp_str =", temp_str)
+            coords_list = eval(temp_str) # string to list
+            float_coords = [float(coord) for coord in coords_list] # list(item) to float
+            float_arrays.append(float_coords)
+
+            temp_str = ''
+            count = 0
+
+    # 打印最终的浮点数数组
+    print('float_arrays =', float_arrays)
+    # temp_arr = np.array(float_arrays)
     #
-    # # x_index = 0
-    # for x_index in range(len(store_keyword)):
-    #     # arr[0][0] = [[32.0, 648.0], [155.0, 648.0], [155.0, 713.0], [32.0, 713.0]]
-    #     # arr[0][1] = ('脂肪', 0.9324982166290283)
-    #     arr[x_index].append(store_keyword[x_index][0])
-    #
-    #     print("append = ", store_keyword[x_index][0])
-    #     #     y_index = y_index + 1
-    #     # x_index = x_index + 1
-    # for i in arr:
-    #     print("arr = ", i)
+    # print('temp_arr[0] =', temp_arr[0])
+
     # 畫幾次
     i = 0
-    while i in range(len(store_keyword)):
+    # while i in range(len(store_keyword)):
         # x1 = int(arr[i][0][0][0]) #0000 32
         # y1 = int(arr[i][0][0][1]) #0001 648
         # x2 = int(arr[i][0][2][0]) #0020 155
         # y2 = int(arr[i][0][2][1]) #0021 713
 
-        final_list =
-        pts = np.array(final_list)
-        temp_img = cv2.polylines(img_np, [pts], True, (0, 0, 255), 3)
-
+        # pts = np.array(float_arrays)
+        # temp_img = cv2.rectangle(img_np, pts, True, (0, 0, 255), 2)
+    temp_img = cv2.rectangle(img_np, (int(float_arrays[0][0]), int(float_arrays[0][1]))
+                             , (int(float_arrays[2][0]), int(float_arrays[2][1])), (0, 0, 255), 2)
     # img_from_np = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
     cv2.imshow("xxxxxx", temp_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-        # print(x1, y1, x2, y2)
-        # # print('id: ' + path)
-
-        # cv2.line(img, (x1, y1), (x2, y2), (0, 0, 255), 3)
-    # i = 0
-    # x1 = []
-    # x2 = []
-    # keyword_XY = []
-    # while i < len(store_keyword):
-    #     keyword_XY.append(store_keyword[i][0])
-    #     x1[i] = int(min(min(min(keyword_XY[0][i], keyword_XY[1][i]), keyword_XY[2][i]), keyword_XY[3][i]))
-    #     x2[i] = int(max(max(max(keyword_XY[0][i], keyword_XY[1][i]), keyword_XY[2][i]), keyword_XY[3][i]))
-
-
 
 
 def search_keyword(all_words, keyword):
