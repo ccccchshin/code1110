@@ -270,52 +270,57 @@ def crop_image(xy, img, id, path):
     keyword = get_txtkey()  # get socket keyword 接socket的字串
     print("keyword = ", keyword)
 
-    all_keyword = np.array(x)
+    all_keyword = np.array(x)  # list to array
+    store_keyword = search_keyword(all_keyword, keyword)  # 在所有文本中找關鍵字的那幾列
+    over_keyword = keyword_processing(store_keyword)  # 進行文字處理（去括號等
 
-    store_keyword = search_keyword(all_keyword, keyword)
-    draw_pic(store_keyword,cropped_image)
+    if len(over_keyword) == 1:
+        print("if hello")
+        draw_pic(over_keyword[0], cropped_image)
+    else:
+        for i in range(len(over_keyword)):
+            if i == 0:
+                draw_pic(over_keyword[0], cropped_image)
+            else:
+                print("have???")
+                resultImg = cv2.imread("C:/Users/shin/410828608/yolov7-main/draw_result.jpg")
+                draw_pic(over_keyword[i], resultImg)
 
     # print(x, end="\n")
     for i in x:
         print(i)
 
 
-def draw_pic(store_keyword, cropped_image):
-
-    img_np = np.asarray(cropped_image)
-    test = ""
-    final = ''
+def keyword_processing(store_keyword):
+    location_list = []
+    # 去掉後面的('糖', 0.9993472695350647)
     for i in range(len(store_keyword)):
+        add_str = ""  # add_str用來存沒有('糖', 0.9993472695350647)的字串
         # print("i = ", i)
-
         if "], (" in store_keyword[i]:
-            start_index = store_keyword[i].find("], (")
+            start_index = store_keyword[i].find("], (")  # 找出 "], (" 的索引值
             if start_index != -1:
                 for j in range(start_index):
-                    test = test + store_keyword[i][j]
+                    add_str = add_str + store_keyword[i][j]
             else:
                 print("can not find")
-        #
-        # while flag:
-        #     if "], (" in store_keyword[i]:
-        #         start_index = store_keyword[i].find("], (")
-        #         i = 0
-        #         flag = False
-        #     else:
-        #         test.append(store_keyword[i][count])
-        #         print("count = ", count)
-        #         print("store_keyword = ", store_keyword[i][count])
-        #         count = count + 1
-        final = test.replace('[[','')
-        print("final = ", final)
+        add_str = add_str.replace('[[', '')  # 去掉前面的兩個括號
+        print("add_str = ", add_str)
+        location_list.append(add_str)
+    for i in location_list:
+        print("location_list =", i)
+    return location_list
 
-    final = final.replace(' ', '')
+
+def get_location(store_keyword):
+    # img_np = np.asarray(cropped_image)  # 圖片轉格式，下面畫圖的function要用的
+    location = store_keyword.replace(' ', '')  # [77.0, 957.0], [154.0, 957.0], [154.0, 1026.0], [77.0, 1026.0]
     float_arrays = []
     temp_str = ''
     sign = 0
     count = 0
-
-    for char in final:
+    # 抓座標
+    for char in location:
         if char == '[':
             count += 1
         elif char == ']':
@@ -327,22 +332,23 @@ def draw_pic(store_keyword, cropped_image):
                 continue
         temp_str += char
         if count == 2:
-            print("temp_str =", temp_str)
-            coords_list = eval(temp_str) # string to list
-            float_coords = [float(coord) for coord in coords_list] # list(item) to float
-            float_arrays.append(float_coords)
+            temp_list = eval(temp_str)  # string to list
+            float_list = [float(coord) for coord in temp_list]  # list(item) to float
+            float_arrays.append(float_list)
 
             temp_str = ''
             count = 0
-
-    # 打印最终的浮点数数组
-    print('float_arrays =', float_arrays)
     # temp_arr = np.array(float_arrays)
-    #
     # print('temp_arr[0] =', temp_arr[0])
+    print('float_arrays =', float_arrays)
+    return float_arrays
 
-    # 畫幾次
-    i = 0
+
+def draw_pic(store_keyword, cropped_image):
+
+    img_np = np.asarray(cropped_image)  # 圖片轉格式，下面畫圖的function要用的
+    float_location = get_location(store_keyword)
+
     # while i in range(len(store_keyword)):
         # x1 = int(arr[i][0][0][0]) #0000 32
         # y1 = int(arr[i][0][0][1]) #0001 648
@@ -351,10 +357,12 @@ def draw_pic(store_keyword, cropped_image):
 
         # pts = np.array(float_arrays)
         # temp_img = cv2.rectangle(img_np, pts, True, (0, 0, 255), 2)
-    temp_img = cv2.rectangle(img_np, (int(float_arrays[0][0]), int(float_arrays[0][1]))
-                             , (int(float_arrays[2][0]), int(float_arrays[2][1])), (0, 0, 255), 2)
+    temp_img = cv2.rectangle(img_np, (int(float_location[0][0]), int(float_location[0][1]))
+                             , (int(float_location[2][0]), int(float_location[2][1])), (0, 0, 255), 2)
     # img_from_np = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
-    cv2.imshow("xxxxxx", temp_img)
+
+    cv2.imwrite("C:/Users/shin/410828608/yolov7-main/draw_result.jpg", temp_img)
+    cv2.imshow("result", temp_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
@@ -363,17 +371,6 @@ def search_keyword(all_words, keyword):
     arr = [0] * len(all_words)
     store_keyword = []
 
-    # 成分  100克 list(0)
-    # 脂肪   50克 list(1)
-    #
-    # for(int i=0;i<=arr.length;i++){
-    #     test[]
-    #     arr[] = {0,1,2,3,4,5}
-    #     arr2[] = {3,0,3,3,3,3}
-    #     if(arr[i] == arr2[i]){
-    #         test[i]++
-    #     }
-    # }
     for i in range(len(all_words)):
         # if operator.contains(all_words(i), keyword):
         if keyword in all_words[i]:
@@ -381,8 +378,6 @@ def search_keyword(all_words, keyword):
     for i in range(len(arr)):
         if arr[i] != 0:
             store_keyword.append(all_words[i]+")]")
-            print("all_words[i] = ", all_words[i])
-
     print("contains = ", store_keyword)
     return store_keyword
     # SocketServer.send_String(store_keyword)

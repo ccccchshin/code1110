@@ -283,7 +283,7 @@ def receive_file(conn):
 
 def send_file(conn):
     eof = bytes([0x00, 0x00, 0x00])
-    f = open("C:/Users/shin/410828608/yolov7-main/image.jpg", "rb+")
+    f = open("C:/Users/shin/410828608/yolov7-main/draw_result.jpg", "rb+")
     data = f.read(8192)
     try:
         while data:
