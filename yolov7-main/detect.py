@@ -34,6 +34,7 @@ from utils.torch_utils import select_device, load_classifier, time_synchronized,
 
 ser_keyword = ""
 
+
 #
 # import pytesseract
 # from PIL import Image
@@ -181,6 +182,12 @@ def detect(save_img=False):
                         crop_image(xyxy, im0, imgNo, f_name)
                         imgNo = imgNo + 1
 
+            else:
+                img_num = 0
+                f_name = save_path.split(".")[0]
+                no_crop(im0, img_num, f_name)
+
+
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
             # 我選取到的範圍都print出來
@@ -221,23 +228,37 @@ def detect(save_img=False):
 
     print(f'Done. ({time.time() - t0:.3f}s)')
 
+def no_crop(img, id, path):
+    cv2.imshow("cropped", img)
+    cimg_name = path + "_" + str(id) + ".jpg"
+    cv2.imwrite(cimg_name, img)
 
-#
-# def main():
-#      pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-#      img = Image.open(r"C:\Users\shin\410828608\pytesseract-master\tests\data\clear_2.jpg")
-#      # img.show()
-#      print(pytesseract.image_to_string(img, lang='chi_tra'))  # chi_tra_vert
+    ocr_model = PaddleOCR(lang='ch', use_gpu=False)  # chi_tra 在tesseract 是繁體
+    img_path = os.path.join(cimg_name)
+    # result = ocr_model.ocr(img_path, det=False)
+    result = ocr_model.ocr(img_path)
+    s = " ".join('%s' % id for id in result)  # list to string
+    # output字
+    x = s.split(")],")  # string split to list
 
-#
-#
-# def sharpen(img, sigma=55):
-#     # sigma = 5、15、25
-#     blur_img = cv2.GaussianBlur(img, (0, 0), sigma)
-#     usm = cv2.addWeighted(img, 1.5, blur_img, -0.5, 0)
-#
-#     return usm
-#
+    keyword = get_txtkey()
+    print("keyword = ", keyword)
+    all_word = np.array(x)  # list to array
+    store_keyword = search_keyword(all_word, keyword)  # 在所有文本中找關鍵字的那幾列
+    over_keyword = keyword_processing(store_keyword)  # 進行文字處理（去括號等
+
+    if len(over_keyword) == 1:
+        draw_pic(over_keyword[0], img)
+    else:
+        for i in range(len(over_keyword)):
+            if i == 0:
+                draw_pic(over_keyword[0], img)
+            else:
+                resultImg = cv2.imread("C:/Users/shin/410828608/yolov7-main/draw_result.jpg")
+                draw_pic(over_keyword[i], resultImg)
+    for i in x:
+        print(i)
+
 
 def crop_image(xy, img, id, path):
     x1 = int(xy[0])
@@ -248,7 +269,6 @@ def crop_image(xy, img, id, path):
     print('id: ' + path)
     cropped_image = img[y1:y2, x1:x2]
     cv2.imshow("cropped", cropped_image)
-
     cimg_name = path + "_" + str(id) + ".jpg"
     cv2.imwrite(cimg_name, cropped_image)
 
@@ -259,36 +279,29 @@ def crop_image(xy, img, id, path):
     s = " ".join('%s' % id for id in result)  # list to string
     # output字
     x = s.split(")],")  # string split to list
-    # 接到圖、字
-    # 下方main function跑圖 這邊存圖裡的字 + socket會有一個字串
-    # socket解析 get裡面內容
-    # 用迴圈跑 跑到了把index存下來（預想是array[index++]）
-    # 最後再跑迴圈然後對影像作處理
-    # 去get y座標 高取兩個y座標的中間值 長度對應圖片長度就行 去做標示
-    # 最後用socket回傳
 
-    keyword = get_txtkey()  # get socket keyword 接socket的字串
+    keyword = get_txtkey()
     print("keyword = ", keyword)
-
-    all_keyword = np.array(x)  # list to array
-    store_keyword = search_keyword(all_keyword, keyword)  # 在所有文本中找關鍵字的那幾列
+    all_word = np.array(x)  # list to array
+    store_keyword = search_keyword(all_word, keyword)  # 在所有文本中找關鍵字的那幾列
     over_keyword = keyword_processing(store_keyword)  # 進行文字處理（去括號等
 
     if len(over_keyword) == 1:
-        print("if hello")
         draw_pic(over_keyword[0], cropped_image)
     else:
         for i in range(len(over_keyword)):
             if i == 0:
                 draw_pic(over_keyword[0], cropped_image)
             else:
-                print("have???")
                 resultImg = cv2.imread("C:/Users/shin/410828608/yolov7-main/draw_result.jpg")
                 draw_pic(over_keyword[i], resultImg)
 
-    # print(x, end="\n")
     for i in x:
         print(i)
+    temp_img = cv2.imread("C:/Users/shin/410828608/yolov7-main/draw_result.jpg")
+    cv2.imshow("result", temp_img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 def keyword_processing(store_keyword):
@@ -313,9 +326,9 @@ def keyword_processing(store_keyword):
 
 
 def get_location(store_keyword):
-    # img_np = np.asarray(cropped_image)  # 圖片轉格式，下面畫圖的function要用的
-    location = store_keyword.replace(' ', '')  # [77.0, 957.0], [154.0, 957.0], [154.0, 1026.0], [77.0, 1026.0]
-    float_arrays = []
+    location = store_keyword.replace(' ', '')
+    # [77.0, 957.0], [154.0, 957.0], [154.0, 1026.0], [77.0, 1026.0]
+    float_location = []
     temp_str = ''
     sign = 0
     count = 0
@@ -334,37 +347,23 @@ def get_location(store_keyword):
         if count == 2:
             temp_list = eval(temp_str)  # string to list
             float_list = [float(coord) for coord in temp_list]  # list(item) to float
-            float_arrays.append(float_list)
-
+            float_location.append(float_list)
             temp_str = ''
             count = 0
-    # temp_arr = np.array(float_arrays)
-    # print('temp_arr[0] =', temp_arr[0])
-    print('float_arrays =', float_arrays)
-    return float_arrays
+    print('float_arrays =', float_location)
+    return float_location
 
 
 def draw_pic(store_keyword, cropped_image):
-
     img_np = np.asarray(cropped_image)  # 圖片轉格式，下面畫圖的function要用的
     float_location = get_location(store_keyword)
 
-    # while i in range(len(store_keyword)):
-        # x1 = int(arr[i][0][0][0]) #0000 32
-        # y1 = int(arr[i][0][0][1]) #0001 648
-        # x2 = int(arr[i][0][2][0]) #0020 155
-        # y2 = int(arr[i][0][2][1]) #0021 713
-
-        # pts = np.array(float_arrays)
-        # temp_img = cv2.rectangle(img_np, pts, True, (0, 0, 255), 2)
     temp_img = cv2.rectangle(img_np, (int(float_location[0][0]), int(float_location[0][1]))
-                             , (int(float_location[2][0]), int(float_location[2][1])), (0, 0, 255), 2)
+                             , (int(float_location[2][0]), int(float_location[2][1]))
+                             , (0, 0, 255), 3)
     # img_from_np = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
 
     cv2.imwrite("C:/Users/shin/410828608/yolov7-main/draw_result.jpg", temp_img)
-    cv2.imshow("result", temp_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
 
 
 def search_keyword(all_words, keyword):
@@ -373,11 +372,14 @@ def search_keyword(all_words, keyword):
 
     for i in range(len(all_words)):
         # if operator.contains(all_words(i), keyword):
-        if keyword in all_words[i]:
-            arr[i] = arr[i] + 1
+        for j in range(len(keyword)):
+            if keyword[j] in all_words[i]:
+                arr[i] = arr[i] + 1
     for i in range(len(arr)):
-        if arr[i] != 0:
-            store_keyword.append(all_words[i]+")]")
+        # if arr[i] != 0:
+        #     store_keyword.append(all_words[i] + ")]")
+        if arr[i] == len(keyword):
+            store_keyword.append(all_words[i] + ")]")
     print("contains = ", store_keyword)
     return store_keyword
     # SocketServer.send_String(store_keyword)
@@ -386,23 +388,27 @@ def search_keyword(all_words, keyword):
 
 def get_txtkey():
     temp = file_contents.split('"')
+    key_list = []
     key = temp[1].strip('"')
-    return key
+    for i in key:
+        key = i.strip('"')
+        key_list.append(key)
+    print('key_list =', key_list)
+    return key_list
 
 file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
 file_contents = ""
-# 打開文件以讀取模式
 with open(file_path, "r") as file:
     file_contents = file.read()  # 讀取文件內容並存儲在file_contents變數中
 
-# 現在你可以使用file_contents變數來訪問文件的內容
 print("文件內容:")
 print(file_contents)
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--weights', nargs='+', type=str, default='C:/Users/shin/runs/train/exp14/weights/best.pt',
                     help='model.pt path(s)')  # help()函數是查看函數或模組用途的詳細說明
-parser.add_argument('--source', type=str, default='C:/Users/shin/410828608/yolov7-main/image.jpg', help='source')  # file/folder, 0 for webcam
+parser.add_argument('--source', type=str, default='C:/Users/shin/410828608/yolov7-main/image.jpg',
+                    help='source')  # file/folder, 0 for webcam
 parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
 parser.add_argument('--conf-thres', type=float, default=0.2, help='object confidence threshold')
 parser.add_argument('--iou-thres', type=float, default=0.45, help='IOU threshold for NMS')

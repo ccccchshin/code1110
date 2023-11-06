@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import socket
-# import detect
-# import module
 import socketserver
 import time
 import numpy as np
@@ -17,54 +15,59 @@ import os
 import subprocess
 from PIL import Image
 
-
 global msgrecv
-msgrecv = "11"
+msgrecv = '11'
+
 file_len = 0
+str_len = 0
+msgrecv_lock = threading.Lock()
+
 
 # str ------------------------------------------------------------------------ str
 
 def str_io(conn):
-    # global msgrecv
-    # msgrecv = ""
-    while True:
-        # 字串處理
-        data = conn.recv(1024)  # String
-        msgrecv = jpysocket.jpydecode(data)
-
-        file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
-        with open(file_path, "w") as file:
-            new_contents = msgrecv
-            file.write(new_contents)
-        print("已被覆蓋")
-
-        if not msgrecv:
+    temp = ''
+    # 字串處理
+    data = conn.recv(8192)  # String
+    temp = temp + jpysocket.jpydecode(data)
+    if not data:
         #     # if data is not received break 檢查封包是否為空
         #     print("no get string data")
         #     # time.sleep(0.5)
-            break
-        print("keyword: " + msgrecv)
-        # get_str(msgrecv)
-        out_msg = jpysocket.jpyencode("keyword: " + msgrecv)
-        conn.send(out_msg)
-        # conn.sendall(msgrecv.encode("utf-8"))
-        # conn.sendall("OK".encode("utf-8"))
-        print("get ok")
+        print("not string data")
+    with msgrecv_lock:
+        msgrecv = temp
+
+    erase_txt()
+
+    file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
+    with open(file_path, "a") as file:
+        new_contents = msgrecv
+        file.write(new_contents)
+    print("已被覆蓋")
+
+    print("keyword: " + msgrecv)
+    # time.sleep(1)
+    out_msg = jpysocket.jpyencode("ok")
+
+    conn.send(out_msg)
+    # time.sleep(1)
+    # conn.sendall(msgrecv.encode("utf-8"))
+    # conn.sendall("OK".encode("utf-8"))
+
+    data = conn.recv(8192)  # String
+    temp = temp + jpysocket.jpydecode(data)
+
+    print("get ack")
 
     print("conn 8181")
-    conn.close()
-    # return msgrecv
+    # conn.close()
 
-        # os.system('detect.py')
-        # detect.py have to catch 2 args image & keyword
-        # os.popen() 把detect執行完的成果拿過來
 
-        # send_keyword(conn, msgrecv) yy
-        # send image(conn, image)
-
-        # print("from connected user: " + str(data))
-        # get detect.py 執行過後的結果
-        # return(detect.py傳過來的圖片)
+def erase_txt():
+    file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
+    with open(file_path, "w") as file:
+        print('文件內容已清除')
 
 
 def str_server():
@@ -85,47 +88,10 @@ def str_server():
         conn, address = str_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
         print('Connect with ' + address[0] + ':' + str(address[1]))
         str_io(conn)
-        # t1 = threading.Thread(target=str_io, args=(conn,))
-        # t1.start()
         print('str socket call success')
+        time.sleep(1)
+        conn.close()
 
-
-# def get_image(conn):
-#
-#     while 1:
-#         # image 處理格式
-#         image = conn.recv(1024)  # image
-#         image_arr = []
-#         image_arr.extend(image)
-#
-#         if len(image_arr) == 0:
-#             print("null or not?")
-#         #     break
-#
-#         print("get over")
-#         result_image = np.ascontiguousarray(bytearray(image_arr), dtype="uint8")
-#
-#         result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
-#
-#         cv2.namedWindow("Image")
-#         cv2.imshow("Image", result_image)
-#         cv2.waitKey(0)
-#         cv2.destroyAllWindows()
-#
-#         print("get owari")
-
-
-# 送圖片
-# def send_image(conn, image):
-#     print("send_data", image)
-#     conn.send(image)
-
-# 送文字
-# def send_keyword(conn, store_keyword):
-#     # data = data
-#     print("send_data", store_keyword)
-#     msgsend = jpysocket.jpyencode(store_keyword)  # Encript The Msg
-#     conn.send(msgsend)
 
 # len ------------------------------------------------------------------------------ len
 
@@ -139,7 +105,6 @@ def len_io(conn):
     out_msg = jpysocket.jpyencode("len from Server.")
     conn.send(out_msg)  # Send Msg
     conn.close()
-
 
 def len_server():
     host = "120.110.113.213"  # get the hostname
@@ -159,127 +124,10 @@ def len_server():
         conn, address = str_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
         print('Connect with ' + address[0] + ':' + str(address[1]))
         len_io(conn)
-        # t1 = threading.Thread(target=len_io, args=(conn,))
-        # t1.start()
         print('len socket call success')
 
 
 # file ------------------------------------------------------------------------------- file
-
-def receive_file(conn):
-    global file_len
-    f = open('image.jpg', 'wb+')
-    eof = bytes([0x00, 0x00, 0x00])
-    total = 0
-    while total < file_len:
-        # print("receive")
-        data = conn.recv(8192)
-        f.write(data)
-        total += len(data)
-        # print(total)
-    f.close()
-    print("File Received!")
-
-
-    # result = b''
-    # print("in file_receive")
-    # while True:
-    #     print("in while")
-    #     img = conn.recv(1024*20)  # 接收数据（适当调整缓冲区大小）
-    #     print("after img")
-    #     if not img:
-    #         print("null qq")
-    #         break
-    #     print("result")
-    #     result = result + img
-    # print("8181 while loop")
-    # with open('C:/Users/shin/410828608/yolov7-main/inference/image/app_image.jpg', 'wb') as file:
-    #     file.write(result)
-    # print("Image received successfully")
-    # try:
-    #     rec_img = b''
-    #     # rec_img = bytes([])
-    #     while 1:
-    #         # image 處理格式
-    #         image = conn.recv(1024*10)  # image
-    #         # image_arr = bytearray()
-    #         # all_img = bytearray.append(image_arr)
-    #         # image_arr.extend(image)
-    #
-    #         if not image:
-    #             print("img null")
-    #             break
-    #         rec_img = rec_img + base64.b64decode(image)
-    #             #         cv2.imshow('app_image.JPG', result_image)
-    #             #
-    #             #         print("img get failed3")
-    #             #         cv2.waitKey(0)
-    #             #         cv2.destroyAllWindows()
-    #             #         print("get owari")
-    #             # else:
-    #             #     print("失敗")
-    #
-    #             # if not image or len(image) == 0:
-    #             #     print("img null or not?")
-    #             #     break
-    #             # else:
-    #             #     rec_img = rec_img + image
-    #         # if result_image is not None:
-    #         #         cv2.imshow('app_image.JPG', result_image)
-    #         #
-    #         #         print("img get failed3")
-    #         #         cv2.waitKey(0)
-    #         #         cv2.destroyAllWindows()
-    #         #         print("get owari")
-    #         # else:
-    #         #     print("失敗")
-    #         #
-    #         # print("img get over")
-    #         # # result_image = np.ascontiguousarray(bytearray(image_arr), dtype="uint8")
-    #         #
-    #         # # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
-    #         # result_image = cv2.imdecode(np.ascontiguousarray(bytearray(image_arr), dtype="uint8"), cv2.IMREAD_COLOR)
-    #         #
-    #         # print("img get failed0")
-    #         #
-    #         #     # result_image = cv2.imread('C:/Users/shin/410828608/yolov7-main/inference/images/app_image.JPG',0)
-    #         #     # result_image = cv2.imdecode(result_image, cv2.IMREAD_COLOR)
-    #         #     # print("img get failed1")
-    #         #     # count = 0
-    #         #     #寫入並儲存圖片
-    #         #     # cv2.imwrite('C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG', result_image)
-    #         #     # tempPath = 'C:/Users/shin/410828608/yolov7-main/inference/images/app_image'+str(count)+'.JPG'
-    #         #     # count = count + 1
-    #         #     # print("img get failed2")
-    #         #
-    #         #     # result_image = cv2.imread(tempPath, 0)
-    #     print(len(rec_img))
-    #     # if rec_img:
-    #     if len(rec_img) > 0:
-    #
-    #         np_arr = np.fromstring(rec_img, np.uint8)
-    #         result_image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
-    #         cv2.imshow('Received Image', result_image)
-    #         cv2.waitKey(0)
-    #         cv2.destroyAllWindows()
-    #         conn.send("Image received".encode())
-    #     else:
-    #         conn.send("No image received".encode())
-    #     # print("get over1012")
-    #     # rec_img = base64.b64decode(rec_img)
-    #     # np_arr = np.frombuffer(rec_img, np.uint8)
-    #     # result = cv2.imdecode(np_arr, 1)
-    #     # cv2.imshow('image', result)
-    #     # cv2.waitKey(0)
-    #     # cv2.destroyAllWindows()
-    #     # conn.send("111".encode())
-    #
-    # except Exception as e:
-    #     print("Error:", e)
-    #     print("connect bye")
-    # finally:
-    #     conn.close()
-
 
 def send_file(conn):
     eof = bytes([0x00, 0x00, 0x00])
@@ -299,22 +147,31 @@ def file_io(conn):
     receive_file(conn)
     print("receive_file")
     subprocess.run(['python', 'detect.py'], text=True)
-
-    # os.system('ServerTest.py')
-    # python_script_path = 'detect.py'
-    # script_args = ['C:/Users/shin/410828608/yolov7-main/image.jpg',
-    #                'C:/Users/shin/runs/train/exp14/weights/best.pt']
+    erase_txt()
     send_file(conn)
     print("send_file")
     conn.close()
 
 
+def receive_file(conn):
+    global file_len
+    f = open('image.jpg', 'wb+')
+    eof = bytes([0x00, 0x00, 0x00])
+    total = 0
+    while total < file_len:
+        # print("receive")
+        data = conn.recv(8192)
+        f.write(data)
+        total += len(data)
+        # print(total)
+    f.close()
+    print("File Received!")
+
+
 def file_server():
     host = "120.110.113.213"  # get the hostname
     port = 12350  # initiate port no above 1024
-
-
-        # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
+    # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
     # socket.AF_UNIX => 在本機端進行串接
     # socket.SOCK_STREAM => TCP宣告
     file_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -328,8 +185,6 @@ def file_server():
         conn, address = file_socket.accept()  # server端接收串接，並會回傳(client,address)串接對象與IP位址資訊
         print('Connect with ' + address[0] + ':' + str(address[1]))
         file_io(conn)
-        # t1 = threading.Thread(target=file_io, args=(conn,))
-        # t1.start()
         print('file socket call success')
 
 
@@ -345,5 +200,3 @@ def go():
 
 if __name__ == '__main__':
     go()
-
-
