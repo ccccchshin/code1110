@@ -71,7 +71,7 @@ def erase_txt():
 
 
 def str_server():
-    host = "120.110.113.213"  # get the hostname
+    host = "120.110.113.204"  # get the hostname
     port = 12345  # initiate port no above 1024
 
     # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
@@ -107,7 +107,7 @@ def len_io(conn):
     conn.close()
 
 def len_server():
-    host = "120.110.113.213"  # get the hostname
+    host = "120.110.113.204"  # get the hostname
     port = 12355  # initiate port no above 1024
 
     # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
@@ -169,7 +169,7 @@ def receive_file(conn):
 
 
 def file_server():
-    host = "120.110.113.213"  # get the hostname
+    host = "120.110.113.204"  # get the hostname
     port = 12350  # initiate port no above 1024
     # socket.AF_INET => 兩個server之間進行串接（這裡是client跟server感覺應該也可以用下面那個但要問問看）
     # socket.AF_UNIX => 在本機端進行串接
