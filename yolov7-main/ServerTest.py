@@ -1,5 +1,15 @@
-import torch
-print(torch.cuda.is_available())
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+from paddleocr import PaddleOCR
+
+ocr_model = PaddleOCR(lang='ch', use_gpu=True)  # chi_tra 在tesseract 是繁體
+img_path = 'C:/Users/User/Desktop/menu.jpg'
+result = ocr_model.ocr(img_path)
+s = " ".join('%s' % id for id in result)  # list to string
+# output字
+x = s.split(")],")  # string split to list
+for i in x:
+    print(i)
 
 # import re
 # import numpy as np

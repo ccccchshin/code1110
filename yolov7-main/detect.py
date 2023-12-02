@@ -1,27 +1,20 @@
 # -*- coding: utf-8 -*-
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 import argparse
-import operator
-import sys
 
-# import ServerTest
-import socket
-import SocketServer as soc
 import time
 from pathlib import Path
-# from ServerTest import msgrecv
 
 import cv2
 import torch
 import torch.backends.cudnn as cudnn
 from numpy import random
 
-#####
-from imageio.plugins import opencv
 from paddleocr import PaddleOCR
-from matplotlib import pyplot as plt
+
 import os
-#####
 
 import numpy as np
 
@@ -187,7 +180,6 @@ def detect(save_img=False):
                 f_name = save_path.split(".")[0]
                 no_crop(im0, img_num, f_name)
 
-
             # Print time (inference + NMS)
             print(f'{s}Done. ({(1E3 * (t2 - t1)):.1f}ms) Inference, ({(1E3 * (t3 - t2)):.1f}ms) NMS')
             # 我選取到的範圍都print出來
@@ -228,6 +220,7 @@ def detect(save_img=False):
 
     print(f'Done. ({time.time() - t0:.3f}s)')
 
+
 def no_crop(img, id, path):
     cv2.imshow("cropped", img)
     cimg_name = path + "_" + str(id) + ".jpg"
@@ -254,7 +247,7 @@ def no_crop(img, id, path):
             if i == 0:
                 draw_pic(over_keyword[0], img)
             else:
-                resultImg = cv2.imread("C:/Users/shin/410828608/yolov7-main/draw_result.jpg")
+                resultImg = cv2.imread("C:/Users/User/410828608/yolov7-main/draw_result.JPG")
                 draw_pic(over_keyword[i], resultImg)
     for i in x:
         print(i)
@@ -293,12 +286,12 @@ def crop_image(xy, img, id, path):
             if i == 0:
                 draw_pic(over_keyword[0], cropped_image)
             else:
-                resultImg = cv2.imread("C:/Users/shin/410828608/yolov7-main/draw_result.jpg")
+                resultImg = cv2.imread("C:/Users/User/410828608/yolov7-main/draw_result.JPG")
                 draw_pic(over_keyword[i], resultImg)
 
     for i in x:
         print(i)
-    temp_img = cv2.imread("C:/Users/shin/410828608/yolov7-main/draw_result.jpg")
+    temp_img = cv2.imread("C:/Users/User/410828608/yolov7-main/draw_result.JPG")
     cv2.imshow("result", temp_img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -363,7 +356,7 @@ def draw_pic(store_keyword, cropped_image):
                              , (0, 0, 255), 3)
     # img_from_np = cv2.cvtColor(img_np, cv2.COLOR_BGR2RGB)
 
-    cv2.imwrite("C:/Users/shin/410828608/yolov7-main/draw_result.jpg", temp_img)
+    cv2.imwrite("C:/Users/User/410828608/yolov7-main/draw_result.JPG", temp_img)
 
 
 def search_keyword(all_words, keyword):
@@ -396,7 +389,8 @@ def get_txtkey():
     print('key_list =', key_list)
     return key_list
 
-file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
+
+file_path = "C:/Users/User/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
 file_contents = ""
 with open(file_path, "r") as file:
     file_contents = file.read()  # 讀取文件內容並存儲在file_contents變數中
@@ -405,9 +399,9 @@ print("文件內容:")
 print(file_contents)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--weights', nargs='+', type=str, default='C:/Users/shin/runs/train/exp14/weights/best.pt',
+parser.add_argument('--weights', nargs='+', type=str, default='C:/Users/User/runs/exp14/weights/best.pt',
                     help='model.pt path(s)')  # help()函數是查看函數或模組用途的詳細說明
-parser.add_argument('--source', type=str, default='C:/Users/shin/410828608/yolov7-main/image.jpg',
+parser.add_argument('--source', type=str, default='C:/Users/User/410828608/yolov7-main/image.JPG',
                     help='source')  # file/folder, 0 for webcam
 parser.add_argument('--img-size', type=int, default=640, help='inference size (pixels)')
 parser.add_argument('--conf-thres', type=float, default=0.2, help='object confidence threshold')
@@ -434,7 +428,7 @@ print(opt)
 
 with torch.no_grad():
     if opt.update:  # update all models (to fix SourceChangeWarning)
-        for opt.weights in ['C:/Users/shin/runs/train/exp14/weights/best.pt']:
+        for opt.weights in ['C:/Users/User/runs/exp14/weights/best.pt']:
             detect()
             strip_optimizer(opt.weights)
     else:

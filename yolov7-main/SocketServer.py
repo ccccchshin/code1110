@@ -1,19 +1,13 @@
 # -*- coding: utf-8 -*-
-
 import socket
-import socketserver
+
 import time
-import numpy as np
-import cv2
-import base64
 
 import jpysocket
 import threading
-import sys
-import json
-import os
+
 import subprocess
-from PIL import Image
+
 
 global msgrecv
 msgrecv = '11'
@@ -40,7 +34,7 @@ def str_io(conn):
 
     erase_txt()
 
-    file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
+    file_path = "C:/Users/User/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
     with open(file_path, "a") as file:
         new_contents = msgrecv
         file.write(new_contents)
@@ -65,7 +59,7 @@ def str_io(conn):
 
 
 def erase_txt():
-    file_path = "C:/Users/shin/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
+    file_path = "C:/Users/User/410828608/yolov7-main/store_keyword.txt"  # 指定文件的路徑
     with open(file_path, "w") as file:
         print('文件內容已清除')
 
@@ -131,7 +125,7 @@ def len_server():
 
 def send_file(conn):
     eof = bytes([0x00, 0x00, 0x00])
-    f = open("C:/Users/shin/410828608/yolov7-main/draw_result.jpg", "rb+")
+    f = open("C:/Users/User/410828608/yolov7-main/draw_result.jpg", "rb+")
     data = f.read(8192)
     try:
         while data:
