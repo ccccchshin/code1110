@@ -299,7 +299,7 @@ def crop_image(xy, img, id, path):
 
 def keyword_processing(store_keyword):
     location_list = []
-    # 去掉後面的('糖', 0.9993472695350647)
+    # 去掉後面的'糖', 0.9993472695350647)
     for i in range(len(store_keyword)):
         add_str = ""  # add_str用來存沒有('糖', 0.9993472695350647)的字串
         # print("i = ", i)
